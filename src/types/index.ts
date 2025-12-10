@@ -17,7 +17,7 @@ export interface TaskDetail {
 
 export interface UserTask {
     userTaskId: number;
-    status: 'PENDING' | 'COMPLETED';
+    status: 'PENDING' | 'VERIFYING' | 'COMPLETED';
     task: TaskDetail;
 }
 
