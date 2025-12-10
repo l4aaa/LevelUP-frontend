@@ -2,14 +2,14 @@ import { useEffect, useState, useRef } from 'react';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { CheckCircle, Circle, Trophy, Star, Zap, Loader2 } from 'lucide-react';
-import { DashboardData } from '../types'; // This import should now work
+import type { DashboardData } from '../types';
 
 export default function Dashboard() {
-    const { logout } = useAuth(); // kept for future use if needed
+    const { logout } = useAuth();
     const [data, setData] = useState<DashboardData | null>(null);
     const [loading, setLoading] = useState(true);
 
-    // Track if we need to poll the server (avoiding stale closure in interval)
+    // Track if we need to poll the server
     const shouldPoll = useRef(false);
 
     const fetchDashboard = async (isBackground = false) => {
@@ -35,7 +35,7 @@ export default function Dashboard() {
         fetchDashboard();
     }, []);
 
-    // Polling Logic (runs every 1s if needed)
+    // Polling Logic
     useEffect(() => {
         const interval = setInterval(() => {
             if (shouldPoll.current) {
@@ -48,7 +48,7 @@ export default function Dashboard() {
 
     const completeTask = async (userTaskId: number) => {
         try {
-            // Optimistic Update
+            // Optimistic Update: Immediately show verifying state
             setData(prev => prev ? {
                 ...prev,
                 tasks: prev.tasks.map(t =>
@@ -56,15 +56,14 @@ export default function Dashboard() {
                 )
             } : null);
 
-            // Start Polling immediately
+            // Start Polling immediately so we catch the completion
             shouldPoll.current = true;
 
             await api.post(`/tasks/${userTaskId}/complete`);
 
-            // The polling loop will handle the update to 'COMPLETED'
         } catch (error) {
             console.error("Failed to complete task", error);
-            fetchDashboard(); // Revert on error
+            fetchDashboard(); // Revert data on error
         }
     };
 
