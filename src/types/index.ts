@@ -5,6 +5,7 @@ export interface User {
     currentLevel: number;
     currentXp: number;
     streak: number;
+    unlockedAchievementIds: number[];
 }
 
 export interface TaskDetail {

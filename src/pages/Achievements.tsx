@@ -23,7 +23,6 @@ export default function Achievements() {
         const fetchData = async () => {
             try {
                 setLoading(true);
-                // Execute both requests in parallel for better performance
                 const [achievementsRes, userRes] = await Promise.all([
                     api.get<Achievement[]>('/user/achievements'),
                     api.get<UserResponse>('/user/me')
