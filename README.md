@@ -1,73 +1,176 @@
-# React + TypeScript + Vite
+# 🚀 LevelUp – Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A gamified student engagement platform built with **React**, **TypeScript**, and **Vite**. LevelUp allows students to complete daily missions, earn XP, view leaderboards, and unlock achievements — all through a clean and responsive interface.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## ✨ Features
 
-## React Compiler
+### 🔐 Authentication
+- Secure Login & Registration screens  
+- JWT-based auth stored in LocalStorage  
+- Full AuthContext for user state management
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### 📊 Student Dashboard
+- View **Level**, **Total XP**, and **Daily Streak**
+- Animated progress bar showing XP to next level
+- **Daily Missions** list with states:
+  - `PENDING`
+  - `VERIFYING` (auto-polled)
+  - `COMPLETED`
+- Automatic backend polling for tasks under verification
 
-## Expanding the ESLint configuration
+### 🏆 Achievements
+- Gallery-style achievements page  
+- Locked / unlocked badge display  
+- Populated dynamically through API
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### 📈 Global Leaderboard
+- Sorted rankings based on Level & XP  
+- View the top performers across all study programs
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### 📱 Responsive UI
+- Fully responsive layout  
+- Sidebar/mobile navigation  
+- Built with **Tailwind CSS v4**
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+---
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## 🛠️ Tech Stack
+
+- **Frontend Framework:** React 19 + TypeScript  
+- **Bundler:** Vite  
+- **Styling:** Tailwind CSS v4  
+- **Routing:** React Router DOM v7  
+- **State Management:** React Context API (`AuthContext`)  
+- **Forms:** React Hook Form  
+- **HTTP Client:** Axios  
+- **Icons:** Lucide React  
+
+---
+
+## ⚙️ Prerequisites
+
+Make sure you have installed:
+
+- **Node.js** (LTS recommended)
+- The **LevelUp Backend** running at `http://localhost:8080` (default)
+
+---
+
+## 🚀 Getting Started
+
+### 1. Clone the repository
+```bash
+git clone https://github.com/your-username/levelup-frontend.git
+cd levelup-frontend
+````
+
+### 2. Install dependencies
+
+```bash
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### 3. Start the development server
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm run dev
 ```
+
+Vite will start the project at:
+
+```
+http://localhost:5173
+```
+
+---
+
+## 🔌 API Configuration
+
+The frontend communicates with the backend through an Axios instance.
+
+Default API base URL is set in:
+
+```
+src/services/api.ts
+```
+
+```ts
+const api = axios.create({
+    baseURL: 'http://localhost:8080/api', // Update if backend runs elsewhere
+});
+```
+
+**Tip:**
+You may extract this into a `.env` file by creating:
+
+```
+VITE_API_URL=http://localhost:8080/api
+```
+
+and updating the Axios instance accordingly.
+
+---
+
+## 📜 Available Scripts
+
+Inside `package.json`:
+
+| Script            | Description                      |
+| ----------------- | -------------------------------- |
+| `npm run dev`     | Start Vite dev server            |
+| `npm run build`   | Build production bundle          |
+| `npm run preview` | Preview production build locally |
+| `npm run lint`    | Run ESLint                       |
+
+---
+
+## 📂 Project Structure
+
+```
+src/
+├── context/
+│   └── AuthContext.tsx        # Auth state (token, user, login/logout)
+│
+├── pages/
+│   ├── Achievements.tsx       # Badge gallery view
+│   ├── Dashboard.tsx          # User hub: XP, streak, tasks
+│   ├── Leaderboard.tsx        # Global ranking by XP/Level
+│   ├── Login.tsx              # Authentication (Login)
+│   └── Register.tsx           # Sign-up with study program selection
+│
+├── services/
+│   └── api.ts                 # Axios client & auth interceptor
+│
+├── types/
+│   └── index.ts               # Shared TypeScript interfaces (User, Task, etc.)
+│
+├── App.tsx                    # Routing and layout
+└── main.tsx                   # Entry point
+```
+
+---
+
+## 🛡️ Route Protection
+
+Authenticated pages (Dashboard, Leaderboard, Achievements) are wrapped with a `ProtectedRoute` component.
+
+* If the user is **not logged in**, they are automatically redirected to `/login`.
+* If authenticated, the user gains full access to app features.
+
+---
+
+## 🎯 Future Improvements (Optional)
+
+* Move API URL to `.env`
+* Add loading skeletons for all pages
+* Add dark/light mode
+* Refresh JWT tokens automatically
+* Implement optimistic UI updates for task status changes
+
+---
+
+## ❤️ Credits
+
+Designed as the frontend companion to the **LevelUp Backend** (Spring Boot + PostgreSQL).
