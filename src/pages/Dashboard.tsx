@@ -14,8 +14,11 @@ export default function Dashboard() {
     const [showConfetti, setShowConfetti] = useState(false);
     const [achievementPopup, setAchievementPopup] = useState<string | null>(null);
     const unlockedRef = useRef<number[]>([]);
+    const isFetching = useRef(false);
 
     const fetchDashboard = async (isBackground = false) => {
+        if (isFetching.current) return; // Prevent overlap
+        isFetching.current = true;
         try {
             if (!isBackground) setLoading(true);
             const response = await api.get('/dashboard');
@@ -49,28 +52,32 @@ export default function Dashboard() {
                 unlockedRef.current = newData.unlockedAchievementIds || [];
                 return newData;
             });
-
-            // If any task is VERIFYING, keep polling
             shouldPoll.current = newData.tasks.some(t => t.status === 'VERIFYING');
 
         } catch (error) {
             console.error("Failed to fetch dashboard", error);
         } finally {
             if (!isBackground) setLoading(false);
+            isFetching.current = false;
         }
     };
 
     useEffect(() => {
         fetchDashboard();
-        const interval = setInterval(() => {
-            if (shouldPoll.current) fetchDashboard(true);
-        }, 1000);
-        return () => clearInterval(interval);
+        let timer: number;
+        const loop = () => {
+            if (shouldPoll.current && !isFetching.current) {
+                fetchDashboard(true);
+            }
+            timer = setTimeout(loop, 1000);
+        };
+        loop();
+
+        return () => clearTimeout(timer);
     }, []);
 
     const completeTask = async (userTaskId: number) => {
         try {
-            // Optimistic UI Update
             setData(prev => prev ? {
                 ...prev,
                 tasks: prev.tasks.map(t =>

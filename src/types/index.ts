@@ -17,9 +17,9 @@ export interface TaskDetail {
 
 export interface UserTask {
     userTaskId: number;
-    status: 'PENDING' | 'VERIFYING' | 'COMPLETED';
+    status: 'PENDING' | 'VERIFYING' | 'COMPLETED' | 'FAILED';
     task: TaskDetail;
-    assignedAt: string;
+    assignedDate: string;
     completedAt?: string;
 }
 
