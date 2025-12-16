@@ -1,1 +1,63 @@
 @import "tailwindcss";
+
+@theme {
+    /* Catppuccin Mocha Palette */
+    --color-ctp-rosewater: #f5e0dc;
+    --color-ctp-flamingo: #f2cdcd;
+    --color-ctp-pink: #f5c2e7;
+    --color-ctp-mauve: #cba6f7;
+    --color-ctp-red: #f38ba8;
+    --color-ctp-maroon: #eba0ac;
+    --color-ctp-peach: #fab387;
+    --color-ctp-yellow: #f9e2af;
+    --color-ctp-green: #a6e3a1;
+    --color-ctp-teal: #94e2d5;
+    --color-ctp-sky: #89dceb;
+    --color-ctp-sapphire: #74c7ec;
+    --color-ctp-blue: #89b4fa;
+    --color-ctp-lavender: #b4befe;
+    --color-ctp-text: #cdd6f4;
+    --color-ctp-subtext1: #bac2de;
+    --color-ctp-subtext0: #a6adc8;
+    --color-ctp-overlay2: #9399b2;
+    --color-ctp-overlay1: #7f849c;
+    --color-ctp-overlay0: #6c7086;
+    --color-ctp-surface2: #585b70;
+    --color-ctp-surface1: #45475a;
+    --color-ctp-surface0: #313244;
+    --color-ctp-base: #1e1e2e;
+    --color-ctp-mantle: #181825;
+    --color-ctp-crust: #11111b;
+}
+
+/* Global Reset for Dark Mode */
+body {
+    background-color: var(--color-ctp-base);
+    color: var(--color-ctp-text);
+    font-family: 'Inter', sans-serif; /* Optional: Looks great with Inter or Poppins */
+}
+
+/* Custom Scrollbar for that premium feel */
+::-webkit-scrollbar {
+    width: 8px;
+}
+::-webkit-scrollbar-track {
+    background: var(--color-ctp-base);
+}
+::-webkit-scrollbar-thumb {
+    background: var(--color-ctp-surface2);
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--color-ctp-overlay0);
+}
+
+/* Animation utilities */
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-5px); }
+    100% { transform: translateY(0px); }
+}
+.animate-float {
+    animation: float 3s ease-in-out infinite;
+}

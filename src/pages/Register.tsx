@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
+import { Rocket } from 'lucide-react';
 
 interface StudyProgram {
     id: number;
@@ -13,96 +14,100 @@ export default function Register() {
     const { register, handleSubmit, formState: { errors } } = useForm();
     const { login } = useAuth();
     const navigate = useNavigate();
-
     const [programs, setPrograms] = useState<StudyProgram[]>([]);
     const [serverError, setServerError] = useState('');
 
-    // 1. Fetch Majors on Load
     useEffect(() => {
         api.get('/auth/study-programs')
             .then(res => setPrograms(res.data))
-            .catch(err => console.error("Failed to load majors", err));
+            .catch(err => console.error(err));
     }, []);
 
-    // 2. Handle Form Submit
     const onSubmit = async (data: any) => {
         try {
-            // Ensure ID is a number
             const payload = { ...data, studyProgramId: Number(data.studyProgramId) };
-
             const response = await api.post('/auth/register', payload);
-
-            // Auto-login
             login(response.data.token, response.data.username);
             navigate('/dashboard');
         } catch (err: any) {
-            // Handle backend errors (e.g. "Username already taken")
             setServerError(err.response?.data || 'Registration failed');
         }
     };
 
+    // Shared input class
+    const inputClass = "w-full p-3 bg-ctp-mantle border border-ctp-surface1 rounded-xl text-ctp-text focus:outline-none focus:border-ctp-blue focus:ring-1 focus:ring-ctp-blue transition-all placeholder-ctp-overlay1";
+
     return (
-        <div className="flex h-screen items-center justify-center bg-gray-100 p-4">
-            <form onSubmit={handleSubmit(onSubmit)} className="bg-white p-8 rounded-xl shadow-lg w-full max-w-md border border-gray-100">
-                <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">Create Account 🚀</h2>
+        <div className="flex min-h-screen items-center justify-center bg-ctp-base p-4 relative">
+            <div className="absolute top-0 right-0 w-96 h-96 bg-ctp-blue/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
+
+            <form onSubmit={handleSubmit(onSubmit)} className="bg-ctp-surface0 p-8 rounded-2xl shadow-2xl w-full max-w-md border border-ctp-surface1 relative z-10">
+                <div className="text-center mb-8">
+                    <div className="inline-block p-3 bg-ctp-blue/20 rounded-2xl mb-4 text-ctp-blue">
+                        <Rocket size={32} />
+                    </div>
+                    <h2 className="text-3xl font-bold text-ctp-text">Join LevelUp</h2>
+                    <p className="text-ctp-subtext0 mt-1">Start your gamified learning adventure</p>
+                </div>
 
                 {serverError && (
-                    <div className="bg-red-50 text-red-600 p-3 rounded-lg mb-4 text-sm">
+                    <div className="bg-ctp-red/10 text-ctp-red p-3 rounded-lg mb-6 text-sm border border-ctp-red/20 text-center">
                         {serverError}
                     </div>
                 )}
 
-                <div className="mb-4">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Username</label>
-                    <input
-                        {...register('username', { required: true, minLength: 3 })}
-                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none transition"
-                        placeholder="Student123"
-                    />
-                    {errors.username && <span className="text-red-500 text-xs">Username is required (min 3 chars)</span>}
+                <div className="space-y-4">
+                    <div>
+                        <label className="block text-xs font-bold text-ctp-subtext0 uppercase mb-1 ml-1">Username</label>
+                        <input
+                            {...register('username', { required: true, minLength: 3 })}
+                            className={inputClass}
+                            placeholder="Student123"
+                        />
+                        {errors.username && <span className="text-ctp-red text-xs ml-1">Min 3 chars required</span>}
+                    </div>
+
+                    <div>
+                        <label className="block text-xs font-bold text-ctp-subtext0 uppercase mb-1 ml-1">Email</label>
+                        <input
+                            {...register('email', { required: true })}
+                            type="email"
+                            className={inputClass}
+                            placeholder="you@university.edu"
+                        />
+                    </div>
+
+                    <div>
+                        <label className="block text-xs font-bold text-ctp-subtext0 uppercase mb-1 ml-1">Major</label>
+                        <select
+                            {...register('studyProgramId', { required: true })}
+                            className={inputClass}
+                        >
+                            <option value="">Select your Program...</option>
+                            {programs.map(p => (
+                                <option key={p.id} value={p.id}>{p.name}</option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <div>
+                        <label className="block text-xs font-bold text-ctp-subtext0 uppercase mb-1 ml-1">Password</label>
+                        <input
+                            {...register('password', { required: true, minLength: 6 })}
+                            type="password"
+                            className={inputClass}
+                            placeholder="••••••••"
+                        />
+                        {errors.password && <span className="text-ctp-red text-xs ml-1">Min 6 chars required</span>}
+                    </div>
                 </div>
 
-                <div className="mb-4">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                    <input
-                        {...register('email', { required: true })}
-                        type="email"
-                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none transition"
-                        placeholder="you@university.edu"
-                    />
-                </div>
-
-                <div className="mb-4">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Select Major</label>
-                    <select
-                        {...register('studyProgramId', { required: true })}
-                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white transition"
-                    >
-                        <option value="">-- Choose your Program --</option>
-                        {programs.map(p => (
-                            <option key={p.id} value={p.id}>{p.name}</option>
-                        ))}
-                    </select>
-                    {errors.studyProgramId && <span className="text-red-500 text-xs">Please select a major</span>}
-                </div>
-
-                <div className="mb-6">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                    <input
-                        {...register('password', { required: true, minLength: 6 })}
-                        type="password"
-                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none transition"
-                        placeholder="••••••••"
-                    />
-                    {errors.password && <span className="text-red-500 text-xs">Password too short (min 6 chars)</span>}
-                </div>
-
-                <button type="submit" className="w-full bg-blue-600 text-white font-bold p-3 rounded-lg hover:bg-blue-700 transition shadow-md hover:shadow-lg">
-                    Start Leveling Up
+                <button type="submit" className="w-full bg-ctp-blue hover:bg-ctp-blue/90 text-ctp-base font-bold p-3.5 rounded-xl mt-8 transition-transform active:scale-95 shadow-lg shadow-ctp-blue/20">
+                    Create Account
                 </button>
 
-                <p className="mt-4 text-center text-sm text-gray-600">
-                    Already have an account? <Link to="/login" className="text-blue-600 font-semibold hover:underline">Log in</Link>
+                <p className="mt-6 text-center text-sm text-ctp-subtext0">
+                    Already have an account? <Link to="/login" className="text-ctp-mauve font-semibold hover:underline">Log in</Link>
                 </p>
             </form>
         </div>

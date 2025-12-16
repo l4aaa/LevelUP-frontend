@@ -1,15 +1,11 @@
 import { useEffect, useState, useRef } from 'react';
 import api from '../services/api';
-import { useAuth } from '../context/AuthContext';
-import { CheckCircle, Circle, Trophy, Star, Zap, Loader2 } from 'lucide-react';
+import { CheckCircle, Circle, Trophy, Star, Zap, Loader2, Calendar } from 'lucide-react';
 import type { DashboardData } from '../types';
 
 export default function Dashboard() {
-    const { logout } = useAuth();
     const [data, setData] = useState<DashboardData | null>(null);
     const [loading, setLoading] = useState(true);
-
-    // Track if we need to poll the server
     const shouldPoll = useRef(false);
 
     const fetchDashboard = async (isBackground = false) => {
@@ -18,11 +14,8 @@ export default function Dashboard() {
             const response = await api.get('/dashboard');
             const newData: DashboardData = response.data;
             setData(newData);
-
-            // Check if any task is VERIFYING. If so, keep polling.
             const hasVerifyingTasks = newData.tasks.some(t => t.status === 'VERIFYING');
             shouldPoll.current = hasVerifyingTasks;
-
         } catch (error) {
             console.error("Failed to fetch dashboard", error);
         } finally {
@@ -30,170 +23,188 @@ export default function Dashboard() {
         }
     };
 
-    // Initial Load
     useEffect(() => {
         fetchDashboard();
-    }, []);
-
-    // Polling Logic
-    useEffect(() => {
         const interval = setInterval(() => {
-            if (shouldPoll.current) {
-                fetchDashboard(true);
-            }
+            if (shouldPoll.current) fetchDashboard(true);
         }, 1000);
-
         return () => clearInterval(interval);
     }, []);
 
     const completeTask = async (userTaskId: number) => {
         try {
-            // Optimistic Update: Immediately show verifying state
             setData(prev => prev ? {
                 ...prev,
                 tasks: prev.tasks.map(t =>
                     t.userTaskId === userTaskId ? { ...t, status: 'VERIFYING' } : t
                 )
             } : null);
-
-            // Start Polling immediately so we catch the completion
             shouldPoll.current = true;
-
             await api.post(`/tasks/${userTaskId}/complete`);
-
         } catch (error) {
             console.error("Failed to complete task", error);
-            fetchDashboard(); // Revert data on error
+            fetchDashboard();
         }
     };
 
     if (loading && !data) return (
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-            <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
+        <div className="min-h-full flex items-center justify-center">
+            <Loader2 className="w-10 h-10 text-ctp-mauve animate-spin" />
         </div>
     );
 
-    if (!data) return <div className="p-8 text-center text-red-500">Error loading dashboard</div>;
+    if (!data) return <div className="p-8 text-center text-ctp-red">Error loading dashboard</div>;
 
     const progressPercent = (data.currentXp / (data.currentXp + data.xpToNextLevel)) * 100;
 
     return (
-        <div className="min-h-screen bg-gray-50 p-4 md:p-8">
-            <div className="max-w-4xl mx-auto">
-                <header className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+        <div className="p-6 md:p-12 max-w-6xl mx-auto">
+            {/* Header */}
+            <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6">
+                <div>
+                    <h1 className="text-4xl font-extrabold text-ctp-text mb-2">
+                        Welcome, <span className="text-transparent bg-clip-text bg-gradient-to-r from-ctp-mauve to-ctp-blue">{data.username}</span>!
+                    </h1>
+                    <div className="flex items-center gap-3 text-ctp-subtext0">
+                        <span className="bg-ctp-surface0 border border-ctp-surface1 text-ctp-blue text-xs px-3 py-1 rounded-full font-medium">
+                            {data.studyProgramName}
+                        </span>
+                        <span className="text-ctp-overlay1">•</span>
+                        <span className="flex items-center gap-1 text-ctp-peach font-bold animate-pulse">
+                            <Zap size={16} fill="currentColor" /> {data.streak} Day Streak
+                        </span>
+                    </div>
+                </div>
+                <div className="flex items-center gap-2 bg-ctp-surface0 p-2 rounded-xl border border-ctp-surface1">
+                    <div className="bg-ctp-surface1 p-2 rounded-lg text-ctp-text"><Calendar size={20}/></div>
+                    <div className="pr-2">
+                        <p className="text-xs text-ctp-overlay1 font-medium">Today</p>
+                        <p className="text-sm font-bold text-ctp-text">{new Date().toLocaleDateString()}</p>
+                    </div>
+                </div>
+            </header>
+
+            {/* Stats Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+                {/* Level Card */}
+                <div className="bg-ctp-surface0 p-6 rounded-2xl border border-ctp-surface1 relative overflow-hidden group hover:border-ctp-yellow/50 transition-colors">
+                    <div className="absolute -right-4 -top-4 bg-ctp-yellow/10 w-24 h-24 rounded-full blur-2xl group-hover:bg-ctp-yellow/20 transition-all"></div>
+                    <div className="flex items-center gap-5 relative z-10">
+                        <div className="p-4 bg-ctp-yellow/20 rounded-2xl text-ctp-yellow shadow-inner shadow-ctp-yellow/10">
+                            <Trophy size={32} weight="fill" />
+                        </div>
+                        <div>
+                            <p className="text-sm text-ctp-subtext0 font-medium uppercase tracking-wider">Current Level</p>
+                            <p className="text-4xl font-black text-ctp-text">{data.level}</p>
+                        </div>
+                    </div>
+                </div>
+
+                {/* XP Card */}
+                <div className="bg-ctp-surface0 p-6 rounded-2xl border border-ctp-surface1 relative overflow-hidden group hover:border-ctp-green/50 transition-colors">
+                    <div className="absolute -right-4 -top-4 bg-ctp-green/10 w-24 h-24 rounded-full blur-2xl group-hover:bg-ctp-green/20 transition-all"></div>
+                    <div className="flex items-center gap-5 relative z-10">
+                        <div className="p-4 bg-ctp-green/20 rounded-2xl text-ctp-green shadow-inner shadow-ctp-green/10">
+                            <Star size={32} />
+                        </div>
+                        <div>
+                            <p className="text-sm text-ctp-subtext0 font-medium uppercase tracking-wider">Total XP</p>
+                            <p className="text-4xl font-black text-ctp-text">{data.currentXp}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Level Progress */}
+            <div className="bg-ctp-surface0 p-8 rounded-2xl border border-ctp-surface1 mb-10 shadow-lg shadow-ctp-base/50">
+                <div className="flex justify-between items-end mb-4">
                     <div>
-                        <h1 className="text-3xl font-bold text-gray-900">Welcome, {data.username}!</h1>
-                        <div className="flex items-center gap-2 text-gray-600 mt-1">
-                            <span className="bg-blue-100 text-blue-800 text-xs px-2 py-0.5 rounded-full font-medium">
-                                {data.studyProgramName}
-                            </span>
-                            <span>•</span>
-                            <span className="flex items-center gap-1 text-orange-500 font-bold">
-                                <Zap size={16} fill="currentColor" /> {data.streak} Day Streak
-                            </span>
-                        </div>
+                        <h3 className="font-bold text-xl text-ctp-text mb-1">Level Progress</h3>
+                        <p className="text-sm text-ctp-subtext0">Keep going! You're doing great.</p>
                     </div>
-                </header>
-
-                {/* Stats Cards */}
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
-                    <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4">
-                        <div className="p-3 bg-yellow-100 rounded-xl text-yellow-600">
-                            <Trophy size={24} />
-                        </div>
-                        <div>
-                            <p className="text-xs text-gray-500 font-medium uppercase">Current Level</p>
-                            <p className="text-2xl font-bold text-gray-900">{data.level}</p>
-                        </div>
-                    </div>
-
-                    <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4">
-                        <div className="p-3 bg-purple-100 rounded-xl text-purple-600">
-                            <Star size={24} />
-                        </div>
-                        <div>
-                            <p className="text-xs text-gray-500 font-medium uppercase">Total XP</p>
-                            <p className="text-2xl font-bold text-gray-900">{data.currentXp}</p>
-                        </div>
+                    <div className="text-right">
+                        <span className="text-3xl font-bold text-ctp-mauve">{Math.round(progressPercent)}%</span>
                     </div>
                 </div>
-
-                {/* Level Progress */}
-                <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-8">
-                    <div className="flex justify-between text-sm mb-2">
-                        <span className="font-bold text-gray-700">Level {data.level} Progress</span>
-                        <span className="text-gray-500 font-mono">{Math.round(progressPercent)}%</span>
+                <div className="h-4 bg-ctp-surface1 rounded-full overflow-hidden p-1">
+                    <div
+                        className="h-full rounded-full bg-gradient-to-r from-ctp-blue to-ctp-mauve relative"
+                        style={{ width: `${progressPercent}%`, transition: 'width 1s cubic-bezier(0.4, 0, 0.2, 1)' }}
+                    >
+                        <div className="absolute inset-0 bg-white/20 animate-[pulse_2s_infinite]"></div>
                     </div>
-                    <div className="h-3 bg-gray-100 rounded-full overflow-hidden">
-                        <div
-                            className="h-full bg-gradient-to-r from-blue-500 to-indigo-600 transition-all duration-700 ease-out"
-                            style={{ width: `${progressPercent}%` }}
-                        />
-                    </div>
-                    <p className="text-xs text-right text-gray-400 mt-2">{data.xpToNextLevel} XP to Level {data.level + 1}</p>
                 </div>
+                <p className="text-xs text-right text-ctp-overlay1 mt-3 font-mono">
+                    {data.xpToNextLevel} XP remaining to Level {data.level + 1}
+                </p>
+            </div>
 
-                {/* Task List */}
-                <h2 className="text-xl font-bold mb-4 text-gray-800">Today's Missions</h2>
-                <div className="space-y-3">
-                    {data.tasks.map((t) => (
-                        <div
-                            key={t.userTaskId}
-                            className={`
-                                group p-4 rounded-xl border transition-all duration-200
-                                flex items-center justify-between
-                                ${t.status === 'COMPLETED'
-                                ? 'bg-gray-50 border-gray-100 opacity-60'
-                                : 'bg-white border-gray-200 hover:border-blue-300 hover:shadow-md'
-                            }
-                            `}
-                        >
-                            <div className="flex items-center gap-4">
-                                <button
-                                    onClick={() => t.status === 'PENDING' && completeTask(t.userTaskId)}
-                                    disabled={t.status !== 'PENDING'}
-                                    className={`
-                                        p-2 rounded-full transition-all duration-300
-                                        ${t.status === 'COMPLETED'
-                                        ? 'text-green-500 bg-green-50 scale-110'
-                                        : t.status === 'VERIFYING'
-                                            ? 'text-yellow-600 bg-yellow-50 cursor-wait'
-                                            : 'text-gray-300 hover:text-blue-500 hover:bg-blue-50'
-                                    }
-                                    `}
-                                >
-                                    {t.status === 'COMPLETED' && <CheckCircle size={28} weight="fill" />}
-                                    {t.status === 'PENDING' && <Circle size={28} />}
-                                    {t.status === 'VERIFYING' && <Loader2 size={28} className="animate-spin" />}
-                                </button>
+            {/* Missions */}
+            <div>
+                <h2 className="text-2xl font-bold mb-6 text-ctp-text flex items-center gap-2">
+                    <Zap className="text-ctp-yellow fill-current" /> Daily Missions
+                </h2>
+                <div className="grid gap-4">
+                    {data.tasks.map((t) => {
+                        const isCompleted = t.status === 'COMPLETED';
+                        const isVerifying = t.status === 'VERIFYING';
 
-                                <div>
-                                    <h3 className={`font-medium text-lg ${t.status === 'COMPLETED' ? 'line-through text-gray-400' : 'text-gray-800'}`}>
-                                        {t.task.title}
-                                    </h3>
-                                    <div className="flex items-center gap-2">
-                                        <span className={`
-                                            text-xs px-2 py-0.5 rounded text-gray-500 font-medium
-                                            ${t.status !== 'COMPLETED' && 'bg-gray-100'}
-                                        `}>
-                                            {t.task.category}
-                                        </span>
-                                        {t.status === 'VERIFYING' && (
-                                            <span className="text-xs text-yellow-600 font-bold animate-pulse">
-                                                Verifying...
+                        return (
+                            <div
+                                key={t.userTaskId}
+                                className={`
+                                    group p-5 rounded-2xl border transition-all duration-300 flex items-center justify-between
+                                    ${isCompleted
+                                    ? 'bg-ctp-surface0/50 border-ctp-surface0 opacity-60'
+                                    : 'bg-ctp-surface0 border-ctp-surface1 hover:border-ctp-mauve hover:shadow-lg hover:shadow-ctp-mauve/5 hover:-translate-y-1'
+                                }
+                                `}
+                            >
+                                <div className="flex items-center gap-5">
+                                    <button
+                                        onClick={() => t.status === 'PENDING' && completeTask(t.userTaskId)}
+                                        disabled={t.status !== 'PENDING'}
+                                        className={`
+                                            p-3 rounded-full transition-all duration-300 flex-shrink-0
+                                            ${isCompleted
+                                            ? 'text-ctp-green bg-ctp-green/10'
+                                            : isVerifying
+                                                ? 'text-ctp-peach bg-ctp-peach/10 cursor-wait'
+                                                : 'text-ctp-overlay1 bg-ctp-surface1 hover:bg-ctp-mauve hover:text-ctp-base'
+                                        }
+                                        `}
+                                    >
+                                        {isCompleted && <CheckCircle size={24} strokeWidth={3} />}
+                                        {t.status === 'PENDING' && <Circle size={24} strokeWidth={2.5} />}
+                                        {isVerifying && <Loader2 size={24} className="animate-spin" />}
+                                    </button>
+
+                                    <div>
+                                        <h3 className={`font-semibold text-lg ${isCompleted ? 'text-ctp-overlay1 line-through' : 'text-ctp-text'}`}>
+                                            {t.task.title}
+                                        </h3>
+                                        <div className="flex items-center gap-3 mt-1">
+                                            <span className="text-xs px-2 py-0.5 rounded text-ctp-subtext1 bg-ctp-surface1 font-medium border border-ctp-surface2">
+                                                {t.task.category}
                                             </span>
-                                        )}
+                                            {isVerifying && (
+                                                <span className="text-xs text-ctp-peach font-bold animate-pulse flex items-center gap-1">
+                                                    Verifying...
+                                                </span>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
+
+                                <div className={`
+                                    font-bold text-sm px-4 py-2 rounded-xl whitespace-nowrap
+                                    ${isCompleted ? 'text-ctp-overlay1 bg-transparent' : 'text-ctp-base bg-ctp-mauve'}
+                                `}>
+                                    +{t.task.xpReward} XP
+                                </div>
                             </div>
-                            <div className={`
-                                font-bold text-sm px-3 py-1 rounded-lg
-                                ${t.status === 'COMPLETED' ? 'text-gray-400 bg-gray-100' : 'text-blue-600 bg-blue-50'}
-                            `}>
-                                +{t.task.xpReward} XP
-                            </div>
-                        </div>
-                    ))}
+                        );
+                    })}
                 </div>
             </div>
         </div>

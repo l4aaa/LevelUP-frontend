@@ -27,52 +27,43 @@ export default function Achievements() {
                     api.get<Achievement[]>('/user/achievements'),
                     api.get<UserResponse>('/user/me')
                 ]);
-
                 setAllAchievements(achievementsRes.data);
-
-                const ids = userRes.data.unlockedAchievementIds || [];
-                setUnlockedIds(new Set(ids));
+                setUnlockedIds(new Set(userRes.data.unlockedAchievementIds || []));
             } catch (err) {
                 console.error("Failed to sync achievements:", err);
-                setError("Failed to load achievement data. Please try again later.");
+                setError("Failed to load achievement data.");
             } finally {
                 setLoading(false);
             }
         };
-
         fetchData();
     }, []);
 
-    if (loading) {
-        return (
-            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-                <Loader className="w-8 h-8 text-blue-600 animate-spin" />
-            </div>
-        );
-    }
+    if (loading) return (
+        <div className="min-h-full flex items-center justify-center">
+            <Loader className="w-10 h-10 text-ctp-mauve animate-spin" />
+        </div>
+    );
 
-    if (error) {
-        return (
-            <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-                <div className="bg-white p-6 rounded-xl shadow-sm border border-red-100 flex items-center gap-3 text-red-600 max-w-md">
-                    <AlertCircle className="w-6 h-6 flex-shrink-0" />
-                    <p>{error}</p>
-                </div>
+    if (error) return (
+        <div className="flex justify-center p-12">
+            <div className="bg-ctp-red/10 p-6 rounded-xl border border-ctp-red/20 text-ctp-red flex items-center gap-3">
+                <AlertCircle /> {error}
             </div>
-        );
-    }
+        </div>
+    );
 
     return (
-        <div className="min-h-screen bg-gray-50 p-6 md:p-12">
-            <div className="max-w-5xl mx-auto">
-                <div className="flex items-center gap-3 mb-8">
-                    <div className="bg-yellow-100 p-3 rounded-xl">
-                        <Trophy className="w-8 h-8 text-yellow-600" />
+        <div className="p-6 md:p-12">
+            <div className="max-w-6xl mx-auto">
+                <div className="flex items-center gap-4 mb-10">
+                    <div className="bg-ctp-yellow text-ctp-base p-4 rounded-2xl shadow-lg shadow-ctp-yellow/20">
+                        <Trophy className="w-8 h-8" />
                     </div>
                     <div>
-                        <h1 className="text-3xl font-bold text-gray-900">Your Achievements</h1>
-                        <p className="text-gray-500">
-                            You have unlocked {unlockedIds.size} out of {allAchievements.length} badges
+                        <h1 className="text-3xl font-bold text-ctp-text">Achievements Gallery</h1>
+                        <p className="text-ctp-subtext0 mt-1">
+                            Unlocked: <span className="text-ctp-green font-bold">{unlockedIds.size}</span> / {allAchievements.length} badges
                         </p>
                     </div>
                 </div>
@@ -80,44 +71,41 @@ export default function Achievements() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {allAchievements.map((ach) => {
                         const isUnlocked = unlockedIds.has(ach.id);
-
                         return (
                             <div
                                 key={ach.id}
                                 className={`
-                                    relative p-6 rounded-2xl border transition-all duration-300
-                                    flex flex-col items-center text-center
+                                    relative p-6 rounded-2xl border transition-all duration-500
+                                    flex flex-col items-center text-center group
                                     ${isUnlocked
-                                    ? 'bg-white border-blue-200 shadow-md shadow-blue-50/50 scale-100'
-                                    : 'bg-gray-100 border-gray-200 opacity-75 grayscale-[0.8] scale-95'
+                                    ? 'bg-ctp-surface0 border-ctp-blue/30 shadow-lg shadow-ctp-blue/5 hover:-translate-y-2'
+                                    : 'bg-ctp-surface0/30 border-ctp-surface1 opacity-60 hover:opacity-100'
                                 }
                                 `}
                             >
-                                {/* Icon Circle */}
                                 <div className={`
-                                    w-16 h-16 rounded-full flex items-center justify-center mb-4 text-white shadow-sm
+                                    w-20 h-20 rounded-full flex items-center justify-center mb-5 text-white shadow-xl transition-all duration-500
                                     ${isUnlocked
-                                    ? 'bg-gradient-to-br from-blue-500 to-indigo-600'
-                                    : 'bg-gray-300'
+                                    ? 'bg-gradient-to-br from-ctp-blue to-ctp-mauve scale-110 group-hover:rotate-12'
+                                    : 'bg-ctp-surface1 text-ctp-overlay0'
                                 }
                                 `}>
-                                    {isUnlocked ? <Unlock size={28} /> : <Lock size={28} />}
+                                    {isUnlocked ? <Unlock size={32} /> : <Lock size={32} />}
                                 </div>
 
-                                <h3 className={`font-bold text-lg mb-2 ${isUnlocked ? 'text-gray-900' : 'text-gray-500'}`}>
+                                <h3 className={`font-bold text-xl mb-2 ${isUnlocked ? 'text-ctp-text' : 'text-ctp-overlay1'}`}>
                                     {ach.name}
                                 </h3>
 
-                                <p className="text-sm text-gray-500 leading-relaxed">
+                                <p className="text-sm text-ctp-subtext0 leading-relaxed mb-6">
                                     {ach.description}
                                 </p>
 
-                                {/* Badge for Status */}
                                 <div className={`
-                                    mt-6 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide
+                                    mt-auto px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider
                                     ${isUnlocked
-                                    ? 'bg-green-100 text-green-700'
-                                    : 'bg-gray-200 text-gray-500'
+                                    ? 'bg-ctp-green/10 text-ctp-green border border-ctp-green/20'
+                                    : 'bg-ctp-surface1 text-ctp-overlay0 border border-ctp-surface2'
                                 }
                                 `}>
                                     {isUnlocked ? 'Unlocked' : 'Locked'}
