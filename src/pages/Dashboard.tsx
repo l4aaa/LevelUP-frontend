@@ -2,11 +2,9 @@ import { useEffect, useState, useRef } from 'react';
 import api from '../services/api';
 import { CheckCircle, Circle, Trophy, Star, Zap, Loader2, Calendar } from 'lucide-react';
 import type { DashboardData } from '../types';
-import Toast, { ToastType } from '../components/Toast';
+import Toast, { type ToastType } from '../components/Toast';
 import Confetti from '../components/Confetti';
 import AchievementPopup from '../components/AchievementPopup';
-
-
 
 export default function Dashboard() {
     const [data, setData] = useState<DashboardData | null>(null);
@@ -17,12 +15,9 @@ export default function Dashboard() {
     const [achievementPopup, setAchievementPopup] = useState<string | null>(null);
     const unlockedRef = useRef<number[]>([]);
 
-
-
     const fetchDashboard = async (isBackground = false) => {
         try {
             if (!isBackground) setLoading(true);
-
             const response = await api.get('/dashboard');
             const newData: DashboardData = response.data;
 
@@ -45,7 +40,9 @@ export default function Dashboard() {
 
                     const diff = newUnlocked.find(id => !previousUnlocked.includes(id));
                     if (diff) {
-                        setAchievementPopup(`Achievement #${diff}`);
+                        // In a real app, we'd fetch the achievement name from the ID
+                        // For now, we show a generic success or the ID
+                        setAchievementPopup(`Achievement Unlocked!`);
                     }
                 }
 
@@ -53,6 +50,7 @@ export default function Dashboard() {
                 return newData;
             });
 
+            // If any task is VERIFYING, keep polling
             shouldPoll.current = newData.tasks.some(t => t.status === 'VERIFYING');
 
         } catch (error) {
@@ -61,8 +59,6 @@ export default function Dashboard() {
             if (!isBackground) setLoading(false);
         }
     };
-
-
 
     useEffect(() => {
         fetchDashboard();
@@ -74,6 +70,7 @@ export default function Dashboard() {
 
     const completeTask = async (userTaskId: number) => {
         try {
+            // Optimistic UI Update
             setData(prev => prev ? {
                 ...prev,
                 tasks: prev.tasks.map(t =>
@@ -83,14 +80,14 @@ export default function Dashboard() {
 
             setToast({
                 type: 'TASK',
-                message: 'Task completed! XP incoming 🚀'
+                message: 'Task submitted! Verifying...'
             });
 
             shouldPoll.current = true;
             await api.post(`/tasks/${userTaskId}/complete`);
         } catch (error) {
             console.error("Failed to complete task", error);
-            fetchDashboard();
+            fetchDashboard(); // Revert on error
         }
     };
 
@@ -102,11 +99,13 @@ export default function Dashboard() {
 
     if (!data) return <div className="p-8 text-center text-ctp-red">Error loading dashboard</div>;
 
-    const progressPercent = (data.currentXp / (data.currentXp + data.xpToNextLevel)) * 100;
-
+    // FIX: Calculate percentage based on 100 XP per level (Backend logic)
+    // Formula: (Current XP % 100) is the progress into the current level
+    const xpPerLevel = 100;
+    const currentLevelProgress = data.currentXp % xpPerLevel;
+    const progressPercent = (currentLevelProgress / xpPerLevel) * 100;
 
     return (
-
         <div className="p-6 md:p-12 max-w-6xl mx-auto">
             {/* Header */}
             <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6">
@@ -140,7 +139,7 @@ export default function Dashboard() {
                     <div className="absolute -right-4 -top-4 bg-ctp-yellow/10 w-24 h-24 rounded-full blur-2xl group-hover:bg-ctp-yellow/20 transition-all"></div>
                     <div className="flex items-center gap-5 relative z-10">
                         <div className="p-4 bg-ctp-yellow/20 rounded-2xl text-ctp-yellow shadow-inner shadow-ctp-yellow/10">
-                            <Trophy size={32} weight="fill" />
+                            <Trophy size={32} strokeWidth={2.5} />
                         </div>
                         <div>
                             <p className="text-sm text-ctp-subtext0 font-medium uppercase tracking-wider">Current Level</p>
@@ -154,7 +153,7 @@ export default function Dashboard() {
                     <div className="absolute -right-4 -top-4 bg-ctp-green/10 w-24 h-24 rounded-full blur-2xl group-hover:bg-ctp-green/20 transition-all"></div>
                     <div className="flex items-center gap-5 relative z-10">
                         <div className="p-4 bg-ctp-green/20 rounded-2xl text-ctp-green shadow-inner shadow-ctp-green/10">
-                            <Star size={32} />
+                            <Star size={32} strokeWidth={2.5} />
                         </div>
                         <div>
                             <p className="text-sm text-ctp-subtext0 font-medium uppercase tracking-wider">Total XP</p>
@@ -178,7 +177,7 @@ export default function Dashboard() {
                 <div className="h-4 bg-ctp-surface1 rounded-full overflow-hidden p-1">
                     <div
                         className="h-full rounded-full bg-gradient-to-r from-ctp-blue to-ctp-mauve relative"
-                        style={{ width: `${progressPercent}%`, transition: 'width 1s cubic-bezier(0.4, 0, 0.2, 1)' }}
+                        style={{ width: `${progressPercent === 0 ? 5 : progressPercent}%`, transition: 'width 1s cubic-bezier(0.4, 0, 0.2, 1)' }}
                     >
                         <div className="absolute inset-0 bg-white/20 animate-[pulse_2s_infinite]"></div>
                     </div>
@@ -272,7 +271,6 @@ export default function Dashboard() {
                     onClose={() => setAchievementPopup(null)}
                 />
             )}
-
         </div>
     );
 }

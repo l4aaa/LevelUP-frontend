@@ -25,6 +25,7 @@ export default function Register() {
 
     const onSubmit = async (data: any) => {
         try {
+            // Ensure studyProgramId is a number for the Java backend (Long)
             const payload = { ...data, studyProgramId: Number(data.studyProgramId) };
             const response = await api.post('/auth/register', payload);
             login(response.data.token, response.data.username);
@@ -34,7 +35,6 @@ export default function Register() {
         }
     };
 
-    // Shared input class
     const inputClass = "w-full p-3 bg-ctp-mantle border border-ctp-surface1 rounded-xl text-ctp-text focus:outline-none focus:border-ctp-blue focus:ring-1 focus:ring-ctp-blue transition-all placeholder-ctp-overlay1";
 
     return (
@@ -60,11 +60,11 @@ export default function Register() {
                     <div>
                         <label className="block text-xs font-bold text-ctp-subtext0 uppercase mb-1 ml-1">Username</label>
                         <input
-                            {...register('username', { required: true, minLength: 3 })}
+                            {...register('username', { required: true, minLength: 3, maxLength: 20 })}
                             className={inputClass}
                             placeholder="Student123"
                         />
-                        {errors.username && <span className="text-ctp-red text-xs ml-1">Min 3 chars required</span>}
+                        {errors.username && <span className="text-ctp-red text-xs ml-1">3-20 characters required</span>}
                     </div>
 
                     <div>
@@ -88,6 +88,7 @@ export default function Register() {
                                 <option key={p.id} value={p.id}>{p.name}</option>
                             ))}
                         </select>
+                        {errors.studyProgramId && <span className="text-ctp-red text-xs ml-1">Please select a program</span>}
                     </div>
 
                     <div>

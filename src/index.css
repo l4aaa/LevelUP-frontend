@@ -28,16 +28,39 @@
     --color-ctp-base: #1e1e2e;
     --color-ctp-mantle: #181825;
     --color-ctp-crust: #11111b;
+
+    /* Register Custom Keyframes here for Tailwind v4 */
+    --animate-float: float 3s ease-in-out infinite;
+    --animate-slideIn: slideIn 0.4s ease-out;
+    --animate-slideUp: slideUp 0.4s ease-out;
+    --animate-confettiFall: confettiFall 2s linear forwards;
+
+    @keyframes float {
+        0% { transform: translateY(0px); }
+        50% { transform: translateY(-5px); }
+        100% { transform: translateY(0px); }
+    }
+    @keyframes slideIn {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+    @keyframes slideUp {
+        from { transform: translateY(40px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+    @keyframes confettiFall {
+        to { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+    }
 }
 
-/* Global Reset for Dark Mode */
+/* Global Reset */
 body {
     background-color: var(--color-ctp-base);
     color: var(--color-ctp-text);
-    font-family: 'Inter', sans-serif; /* Optional: Looks great with Inter or Poppins */
+    font-family: 'Inter', sans-serif;
 }
 
-/* Custom Scrollbar for that premium feel */
+/* Custom Scrollbar */
 ::-webkit-scrollbar {
     width: 8px;
 }
@@ -52,27 +75,6 @@ body {
     background: var(--color-ctp-overlay0);
 }
 
-/* Animation utilities */
-@keyframes float {
-    0% { transform: translateY(0px); }
-    50% { transform: translateY(-5px); }
-    100% { transform: translateY(0px); }
-}
-.animate-float {
-    animation: float 3s ease-in-out infinite;
-}
-
-@keyframes slideIn {
-    from {
-        transform: translateX(100%);
-        opacity: 0;
-    }
-    to {
-        transform: translateX(0);
-        opacity: 1;
-    }
-}
-
 .confetti {
     position: fixed;
     top: -10px;
@@ -82,22 +84,3 @@ body {
     animation: confettiFall 2s linear forwards;
     z-index: 9999;
 }
-
-@keyframes confettiFall {
-    to {
-        transform: translateY(100vh) rotate(720deg);
-        opacity: 0;
-    }
-}
-
-@keyframes slideUp {
-    from {
-        transform: translateY(40px);
-        opacity: 0;
-    }
-    to {
-        transform: translateY(0);
-        opacity: 1;
-    }
-}
-
