@@ -8,6 +8,7 @@ import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import Leaderboard from './pages/Leaderboard';
 import Achievements from './pages/Achievements';
+import Landing from './pages/Landing'; // Import the new page
 
 function ProtectedRoute({ children }: { children: JSX.Element }) {
     const { isAuthenticated } = useAuth();
@@ -94,12 +95,14 @@ export default function App() {
     return (
         <Router>
             <Routes>
+                <Route path="/" element={<Landing />} />
+
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
+
                 <Route path="/dashboard" element={<ProtectedRoute><Layout><Dashboard /></Layout></ProtectedRoute>} />
                 <Route path="/leaderboard" element={<ProtectedRoute><Layout><Leaderboard /></Layout></ProtectedRoute>} />
                 <Route path="/achievements" element={<ProtectedRoute><Layout><Achievements /></Layout></ProtectedRoute>} />
-                <Route path="/" element={<Navigate to="/dashboard" />} />
             </Routes>
         </Router>
     );
