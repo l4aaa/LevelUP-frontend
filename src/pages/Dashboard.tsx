@@ -2,26 +2,67 @@ import { useEffect, useState, useRef } from 'react';
 import api from '../services/api';
 import { CheckCircle, Circle, Trophy, Star, Zap, Loader2, Calendar } from 'lucide-react';
 import type { DashboardData } from '../types';
+import Toast, { ToastType } from '../components/Toast';
+import Confetti from '../components/Confetti';
+import AchievementPopup from '../components/AchievementPopup';
+
+
 
 export default function Dashboard() {
     const [data, setData] = useState<DashboardData | null>(null);
     const [loading, setLoading] = useState(true);
     const shouldPoll = useRef(false);
+    const [toast, setToast] = useState<{ type: ToastType; message: string } | null>(null);
+    const [showConfetti, setShowConfetti] = useState(false);
+    const [achievementPopup, setAchievementPopup] = useState<string | null>(null);
+    const unlockedRef = useRef<number[]>([]);
+
+
 
     const fetchDashboard = async (isBackground = false) => {
         try {
             if (!isBackground) setLoading(true);
+
             const response = await api.get('/dashboard');
             const newData: DashboardData = response.data;
-            setData(newData);
-            const hasVerifyingTasks = newData.tasks.some(t => t.status === 'VERIFYING');
-            shouldPoll.current = hasVerifyingTasks;
+
+            setData(prev => {
+                // 🎉 LEVEL UP DETECTION
+                if (prev && newData.level > prev.level) {
+                    setToast({
+                        type: 'LEVEL',
+                        message: `LEVEL UP! You reached Level ${newData.level} 🎉`
+                    });
+
+                    setShowConfetti(true);
+                    setTimeout(() => setShowConfetti(false), 2000);
+                }
+
+                // 🏆 ACHIEVEMENT UNLOCK DETECTION
+                if (prev) {
+                    const previousUnlocked = unlockedRef.current;
+                    const newUnlocked = newData.unlockedAchievementIds || [];
+
+                    const diff = newUnlocked.find(id => !previousUnlocked.includes(id));
+                    if (diff) {
+                        setAchievementPopup(`Achievement #${diff}`);
+                    }
+                }
+
+                unlockedRef.current = newData.unlockedAchievementIds || [];
+                return newData;
+            });
+
+            shouldPoll.current = newData.tasks.some(t => t.status === 'VERIFYING');
+
         } catch (error) {
             console.error("Failed to fetch dashboard", error);
         } finally {
             if (!isBackground) setLoading(false);
         }
     };
+
+
 
     useEffect(() => {
         fetchDashboard();
@@ -39,6 +80,12 @@ export default function Dashboard() {
                     t.userTaskId === userTaskId ? { ...t, status: 'VERIFYING' } : t
                 )
             } : null);
+
+            setToast({
+                type: 'TASK',
+                message: 'Task completed! XP incoming 🚀'
+            });
+
             shouldPoll.current = true;
             await api.post(`/tasks/${userTaskId}/complete`);
         } catch (error) {
@@ -57,7 +104,9 @@ export default function Dashboard() {
 
     const progressPercent = (data.currentXp / (data.currentXp + data.xpToNextLevel)) * 100;
 
+
     return (
+
         <div className="p-6 md:p-12 max-w-6xl mx-auto">
             {/* Header */}
             <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6">
@@ -207,6 +256,23 @@ export default function Dashboard() {
                     })}
                 </div>
             </div>
+            {/* Popups */}
+            {toast && (
+                <Toast
+                    type={toast.type}
+                    message={toast.message}
+                    onClose={() => setToast(null)}
+                />
+            )}
+            {showConfetti && <Confetti />}
+
+            {achievementPopup && (
+                <AchievementPopup
+                    name={achievementPopup}
+                    onClose={() => setAchievementPopup(null)}
+                />
+            )}
+
         </div>
     );
 }
