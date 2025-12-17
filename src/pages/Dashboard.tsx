@@ -17,7 +17,7 @@ export default function Dashboard() {
     const isFetching = useRef(false);
 
     const fetchDashboard = async (isBackground = false) => {
-        if (isFetching.current) return; // Prevent overlap
+        if (isFetching.current) return;
         isFetching.current = true;
         try {
             if (!isBackground) setLoading(true);
@@ -25,7 +25,6 @@ export default function Dashboard() {
             const newData: DashboardData = response.data;
 
             setData(prev => {
-                // 🎉 LEVEL UP DETECTION
                 if (prev && newData.level > prev.level) {
                     setToast({
                         type: 'LEVEL',
@@ -36,15 +35,12 @@ export default function Dashboard() {
                     setTimeout(() => setShowConfetti(false), 2000);
                 }
 
-                // 🏆 ACHIEVEMENT UNLOCK DETECTION
                 if (prev) {
                     const previousUnlocked = unlockedRef.current;
                     const newUnlocked = newData.unlockedAchievementIds || [];
 
                     const diff = newUnlocked.find(id => !previousUnlocked.includes(id));
                     if (diff) {
-                        // In a real app, we'd fetch the achievement name from the ID
-                        // For now, we show a generic success or the ID
                         setAchievementPopup(`Achievement Unlocked!`);
                     }
                 }
@@ -94,7 +90,7 @@ export default function Dashboard() {
             await api.post(`/tasks/${userTaskId}/complete`);
         } catch (error) {
             console.error("Failed to complete task", error);
-            fetchDashboard(); // Revert on error
+            fetchDashboard();
         }
     };
 
@@ -106,8 +102,6 @@ export default function Dashboard() {
 
     if (!data) return <div className="p-8 text-center text-ctp-red">Error loading dashboard</div>;
 
-    // FIX: Calculate percentage based on 100 XP per level (Backend logic)
-    // Formula: (Current XP % 100) is the progress into the current level
     const xpPerLevel = 100;
     const currentLevelProgress = data.currentXp % xpPerLevel;
     const progressPercent = (currentLevelProgress / xpPerLevel) * 100;

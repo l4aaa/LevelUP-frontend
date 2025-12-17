@@ -6,7 +6,6 @@ export default function Landing() {
     return (
         <div className="min-h-screen bg-ctp-base text-ctp-text font-sans flex flex-col">
 
-            {/* Navbar */}
             <nav className="w-full max-w-7xl mx-auto p-6 flex justify-between items-center animate-[slideIn_0.4s_ease-out]">
                 <div className="flex items-center gap-3">
                     <div className="bg-ctp-mauve text-ctp-base p-2 rounded-lg shadow-lg shadow-ctp-mauve/20">
@@ -30,9 +29,7 @@ export default function Landing() {
                 </div>
             </nav>
 
-            {/* Hero Section */}
             <main className="flex-1 flex flex-col items-center justify-center text-center px-6 py-20 relative overflow-hidden">
-                {/* Background Decorations */}
                 <div className="absolute top-20 left-10 w-72 h-72 bg-ctp-mauve/10 rounded-full blur-3xl animate-pulse"></div>
                 <div className="absolute bottom-20 right-10 w-96 h-96 bg-ctp-blue/10 rounded-full blur-3xl -z-10"></div>
 
@@ -64,7 +61,6 @@ export default function Landing() {
                 </div>
             </main>
 
-            {/* Features Grid */}
             <section className="bg-ctp-mantle py-24 px-6">
                 <div className="max-w-7xl mx-auto">
                     <div className="text-center mb-16">
@@ -92,7 +88,6 @@ export default function Landing() {
                 </div>
             </section>
 
-            {/* Footer */}
             <footer className="border-t border-ctp-surface0 py-8 text-center text-ctp-overlay0 text-sm">
                 <p>© 2024 LevelUp Platform. Built with Spring Boot & React.</p>
             </footer>

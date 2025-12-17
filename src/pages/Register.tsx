@@ -25,7 +25,6 @@ export default function Register() {
 
     const onSubmit = async (data: any) => {
         try {
-            // Ensure studyProgramId is a number for the Java backend (Long)
             const payload = { ...data, studyProgramId: Number(data.studyProgramId) };
             const response = await api.post('/auth/register', payload);
             login(response.data.token, response.data.username);

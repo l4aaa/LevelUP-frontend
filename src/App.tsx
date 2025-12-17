@@ -1,14 +1,12 @@
 import { BrowserRouter as Router, Routes, Route, Navigate, Link, useLocation } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
 import { LayoutDashboard, Trophy, Award, LogOut } from 'lucide-react';
-
-// Import Pages
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import Leaderboard from './pages/Leaderboard';
 import Achievements from './pages/Achievements';
-import Landing from './pages/Landing'; // Import the new page
+import Landing from './pages/Landing';
 
 function ProtectedRoute({ children }: { children: JSX.Element }) {
     const { isAuthenticated } = useAuth();
@@ -33,7 +31,6 @@ function Navigation() {
             md:w-64 md:h-screen md:border-r md:border-t-0 md:static
             flex md:flex-col justify-around md:justify-start p-2 md:p-6 gap-2
         ">
-            {/* Logo Section */}
             <div className="hidden md:flex items-center gap-3 mb-10 px-2 mt-4">
                 <div className="bg-ctp-mauve text-ctp-base p-2.5 rounded-xl shadow-lg shadow-ctp-mauve/20">
                     <Trophy size={24} strokeWidth={2.5} />
@@ -41,7 +38,6 @@ function Navigation() {
                 <h1 className="text-2xl font-bold text-ctp-text tracking-tight">LevelUp</h1>
             </div>
 
-            {/* Links */}
             <div className="flex md:flex-col w-full gap-2">
                 {links.map((link) => {
                     const isActive = location.pathname === link.path;
@@ -68,7 +64,6 @@ function Navigation() {
                 })}
             </div>
 
-            {/* Logout */}
             <button
                 onClick={logout}
                 className="hidden md:flex items-center gap-4 px-4 py-3.5 text-ctp-red hover:bg-ctp-red/10 rounded-xl w-full mt-auto transition-colors font-medium"

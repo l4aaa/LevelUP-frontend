@@ -23,7 +23,6 @@ export default function Login() {
 
     return (
         <div className="flex h-screen items-center justify-center bg-ctp-base p-4 relative overflow-hidden">
-            {/* Background Decorations */}
             <div className="absolute top-10 left-10 w-64 h-64 bg-ctp-mauve/20 rounded-full blur-3xl"></div>
             <div className="absolute bottom-10 right-10 w-64 h-64 bg-ctp-blue/20 rounded-full blur-3xl"></div>
 
