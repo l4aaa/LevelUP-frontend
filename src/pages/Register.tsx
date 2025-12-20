@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
-import { Rocket } from 'lucide-react';
+import { Rocket, ArrowLeft } from 'lucide-react';
 
 interface StudyProgram {
     id: number;
@@ -38,6 +38,14 @@ export default function Register() {
 
     return (
         <div className="flex min-h-screen items-center justify-center bg-ctp-base p-4 relative">
+            <Link
+                to="/"
+                className="absolute top-6 left-6 flex items-center gap-2 text-ctp-subtext0 hover:text-ctp-text transition-colors z-50 font-medium"
+            >
+                <ArrowLeft size={20} />
+                <span>Back to Home</span>
+            </Link>
+
             <div className="absolute top-0 right-0 w-96 h-96 bg-ctp-blue/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
 
             <form onSubmit={handleSubmit(onSubmit)} className="bg-ctp-surface0 p-8 rounded-2xl shadow-2xl w-full max-w-md border border-ctp-surface1 relative z-10">

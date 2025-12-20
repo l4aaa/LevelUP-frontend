@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
-import { Gamepad2 } from 'lucide-react';
+import { Gamepad2, ArrowLeft } from 'lucide-react';
 
 export default function Login() {
     const { register, handleSubmit } = useForm();
@@ -23,6 +23,14 @@ export default function Login() {
 
     return (
         <div className="flex h-screen items-center justify-center bg-ctp-base p-4 relative overflow-hidden">
+            <Link
+                to="/"
+                className="absolute top-6 left-6 flex items-center gap-2 text-ctp-subtext0 hover:text-ctp-text transition-colors z-50 font-medium"
+            >
+                <ArrowLeft size={20} />
+                <span>Back to Home</span>
+            </Link>
+
             <div className="absolute top-10 left-10 w-64 h-64 bg-ctp-mauve/20 rounded-full blur-3xl"></div>
             <div className="absolute bottom-10 right-10 w-64 h-64 bg-ctp-blue/20 rounded-full blur-3xl"></div>
 
@@ -32,6 +40,7 @@ export default function Login() {
                         <Gamepad2 size={32} />
                     </div>
                 </div>
+
                 <h2 className="text-2xl font-bold mb-2 text-center text-ctp-text">Welcome Back</h2>
                 <p className="text-center text-ctp-subtext0 mb-6 text-sm">Resume your learning journey</p>
 
