@@ -45,11 +45,12 @@ The modern, responsive client for **LevelUp**, a platform that transforms academ
 
 | Login Screen | Student Dashboard |
 |:---:|:---:|
-| ![Login Placeholder](https://via.placeholder.com/600x300?text=Login+UI) | ![Dashboard Placeholder](https://via.placeholder.com/600x300?text=Dashboard+UI) |
+| <img width="600" height="300" alt="image" src="https://github.com/user-attachments/assets/d350efbd-cb2e-4d29-818f-d0abaf0949a1" /> | <img width="600" height="300" alt="image" src="https://github.com/user-attachments/assets/a89e3b24-0ba3-480f-81b3-96ca8584dbb1" /> |
 
 | Achievements | Global Leaderboard |
 |:---:|:---:|
-| ![Achievements Placeholder](https://via.placeholder.com/600x300?text=Achievements+Gallery) | ![Leaderboard Placeholder](https://via.placeholder.com/600x300?text=Leaderboard+UI) |
+| <img width="600" height="300" alt="image" src="https://github.com/user-attachments/assets/b84f25ff-0d41-4cad-b710-b559f050a2fe" /> | <img width="600" height="300" alt="image" src="https://github.com/user-attachments/assets/67599c6c-84b9-40e1-9fd8-f4dc9ccc7751" /> |
+
 
 ---
 
@@ -57,13 +58,13 @@ The modern, responsive client for **LevelUp**, a platform that transforms academ
 
 ### 1. Prerequisites
 * **Node.js** (LTS version)
-* **LevelUp Backend** running locally on port `8080` (Check the [Backend Repo](https://github.com/your-username/levelup-backend) for setup).
+* **LevelUp Backend** running locally on port `8080` (Check the [Backend Repo](https://github.com/l4aaa/LevelUP-backend) for setup).
 
 ### 2. Installation
 
 ```bash
 # Clone the repository
-git clone [https://github.com/l4aaa/LevelUP-frontend.git](https://github.com/your-username/levelup-frontend.git)
+git clone [https://github.com/l4aaa/LevelUP-frontend.git](https://github.com/l4aaa/LevelUP-frontend.git)
 cd LevelUP-frontend
 
 # Install dependencies
