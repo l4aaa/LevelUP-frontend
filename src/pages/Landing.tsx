@@ -1,8 +1,20 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Trophy, Zap, Target, ArrowRight, ShieldCheck, Users } from 'lucide-react';
 import React from 'react';
+import { useAuth } from '../context/AuthContext';
 
 export default function Landing() {
+    const { isAuthenticated } = useAuth();
+    const navigate = useNavigate();
+
+    const handleResumeGame = () => {
+        if (isAuthenticated) {
+            navigate('/dashboard');
+        } else {
+            navigate('/login');
+        }
+    };
+
     return (
         <div className="min-h-screen bg-ctp-base text-ctp-text font-sans flex flex-col">
 
@@ -52,12 +64,12 @@ export default function Landing() {
                     >
                         Start Your Journey <ArrowRight size={20} />
                     </Link>
-                    <Link
-                        to="/login"
-                        className="px-8 py-4 bg-ctp-surface0 text-ctp-text text-lg font-bold rounded-2xl border border-ctp-surface1 hover:bg-ctp-surface1 transition-colors"
+                    <button
+                        onClick={handleResumeGame}
+                        className="px-8 py-4 bg-ctp-surface0 text-ctp-text text-lg font-bold rounded-2xl border border-ctp-surface1 hover:bg-ctp-surface1 transition-colors cursor-pointer"
                     >
                         Resume Game
-                    </Link>
+                    </button>
                 </div>
             </main>
 
