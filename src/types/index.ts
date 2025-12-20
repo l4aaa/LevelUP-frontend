@@ -1,3 +1,11 @@
+export interface Achievement {
+    id: number;
+    name: string;
+    description: string;
+    conditionValue?: number;
+    criteriaType?: string;
+}
+
 export interface User {
     id: number;
     username: string;
@@ -32,12 +40,4 @@ export interface DashboardData {
     studyProgramName: string;
     tasks: UserTask[];
     unlockedAchievementIds: number[];
-}
-
-export interface Achievement {
-    id: number;
-    name: string;
-    description: string;
-    conditionValue?: number;
-    criteriaType?: string;
 }

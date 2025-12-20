@@ -14,7 +14,6 @@ export default function Dashboard() {
     const [showConfetti, setShowConfetti] = useState(false);
     const [achievementPopup, setAchievementPopup] = useState<string | null>(null);
 
-    // Refs for tracking changes and looking up names
     const unlockedRef = useRef<number[]>([]);
     const achievementsRef = useRef<Achievement[]>([]);
     const isFetching = useRef(false);
@@ -35,18 +34,15 @@ export default function Dashboard() {
                     });
 
                     setShowConfetti(true);
-                    setTimeout(() => setShowConfetti(false), 2000);
+                    setTimeout(() => setShowConfetti(false), 5000);
                 }
 
                 if (prev) {
                     const previousUnlocked = unlockedRef.current;
                     const newUnlocked = newData.unlockedAchievementIds || [];
-
-                    // Find the newly added ID
                     const diffId = newUnlocked.find(id => !previousUnlocked.includes(id));
 
                     if (diffId) {
-                        // Lookup the name from our reference list
                         const achievement = achievementsRef.current.find(a => a.id === diffId);
                         const name = achievement ? achievement.name : "New Badge";
                         setAchievementPopup(name);
@@ -133,7 +129,6 @@ export default function Dashboard() {
 
     return (
         <div className="p-6 md:p-12 max-w-6xl mx-auto">
-            {/* Header */}
             <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6">
                 <div>
                     <h1 className="text-4xl font-extrabold text-ctp-text mb-2">
@@ -158,9 +153,7 @@ export default function Dashboard() {
                 </div>
             </header>
 
-            {/* Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
-                {/* Level Card */}
                 <div className="bg-ctp-surface0 p-6 rounded-2xl border border-ctp-surface1 relative overflow-hidden group hover:border-ctp-yellow/50 transition-colors">
                     <div className="absolute -right-4 -top-4 bg-ctp-yellow/10 w-24 h-24 rounded-full blur-2xl group-hover:bg-ctp-yellow/20 transition-all"></div>
                     <div className="flex items-center gap-5 relative z-10">
@@ -174,7 +167,6 @@ export default function Dashboard() {
                     </div>
                 </div>
 
-                {/* XP Card */}
                 <div className="bg-ctp-surface0 p-6 rounded-2xl border border-ctp-surface1 relative overflow-hidden group hover:border-ctp-green/50 transition-colors">
                     <div className="absolute -right-4 -top-4 bg-ctp-green/10 w-24 h-24 rounded-full blur-2xl group-hover:bg-ctp-green/20 transition-all"></div>
                     <div className="flex items-center gap-5 relative z-10">
@@ -189,7 +181,6 @@ export default function Dashboard() {
                 </div>
             </div>
 
-            {/* Level Progress */}
             <div className="bg-ctp-surface0 p-8 rounded-2xl border border-ctp-surface1 mb-10 shadow-lg shadow-ctp-base/50">
                 <div className="flex justify-between items-end mb-4">
                     <div>
@@ -213,7 +204,6 @@ export default function Dashboard() {
                 </p>
             </div>
 
-            {/* Missions */}
             <div>
                 <h2 className="text-2xl font-bold mb-6 text-ctp-text flex items-center gap-2">
                     <Zap className="text-ctp-yellow fill-current" /> Daily Missions
@@ -281,7 +271,7 @@ export default function Dashboard() {
                     })}
                 </div>
             </div>
-            {/* Popups */}
+
             {toast && (
                 <Toast
                     type={toast.type}
