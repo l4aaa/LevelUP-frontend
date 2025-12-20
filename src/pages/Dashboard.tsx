@@ -1,7 +1,7 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useMemo } from 'react';
 import api from '../services/api';
 import { CheckCircle, Circle, Trophy, Star, Zap, Loader2, Calendar } from 'lucide-react';
-import type { DashboardData } from '../types';
+import type { DashboardData, Achievement } from '../types';
 import Toast, { type ToastType } from '../components/Toast';
 import Confetti from '../components/Confetti';
 import AchievementPopup from '../components/AchievementPopup';
@@ -13,7 +13,10 @@ export default function Dashboard() {
     const [toast, setToast] = useState<{ type: ToastType; message: string } | null>(null);
     const [showConfetti, setShowConfetti] = useState(false);
     const [achievementPopup, setAchievementPopup] = useState<string | null>(null);
+
+    // Refs for tracking changes and looking up names
     const unlockedRef = useRef<number[]>([]);
+    const achievementsRef = useRef<Achievement[]>([]);
     const isFetching = useRef(false);
 
     const fetchDashboard = async (isBackground = false) => {
@@ -39,9 +42,14 @@ export default function Dashboard() {
                     const previousUnlocked = unlockedRef.current;
                     const newUnlocked = newData.unlockedAchievementIds || [];
 
-                    const diff = newUnlocked.find(id => !previousUnlocked.includes(id));
-                    if (diff) {
-                        setAchievementPopup(`Achievement Unlocked!`);
+                    // Find the newly added ID
+                    const diffId = newUnlocked.find(id => !previousUnlocked.includes(id));
+
+                    if (diffId) {
+                        // Lookup the name from our reference list
+                        const achievement = achievementsRef.current.find(a => a.id === diffId);
+                        const name = achievement ? achievement.name : "New Badge";
+                        setAchievementPopup(name);
                     }
                 }
 
@@ -49,7 +57,6 @@ export default function Dashboard() {
                 return newData;
             });
             shouldPoll.current = newData.tasks.some(t => t.status === 'VERIFYING');
-
         } catch (error) {
             console.error("Failed to fetch dashboard", error);
         } finally {
@@ -59,6 +66,12 @@ export default function Dashboard() {
     };
 
     useEffect(() => {
+        api.get<Achievement[]>('/user/achievements')
+            .then(res => {
+                achievementsRef.current = res.data;
+            })
+            .catch(err => console.error("Failed to load achievement definitions", err));
+
         fetchDashboard();
         let timer: number;
         const loop = () => {
@@ -85,7 +98,6 @@ export default function Dashboard() {
                 type: 'TASK',
                 message: 'Task submitted! Verifying...'
             });
-
             shouldPoll.current = true;
             await api.post(`/tasks/${userTaskId}/complete`);
         } catch (error) {
@@ -93,6 +105,19 @@ export default function Dashboard() {
             fetchDashboard();
         }
     };
+
+    const sortedTasks = useMemo(() => {
+        if (!data) return [];
+        return [...data.tasks].sort((a, b) => {
+            const isACompleted = a.status === 'COMPLETED';
+            const isBCompleted = b.status === 'COMPLETED';
+
+            if (isACompleted && !isBCompleted) return 1;
+            if (!isACompleted && isBCompleted) return -1;
+
+            return a.userTaskId - b.userTaskId;
+        });
+    }, [data]);
 
     if (loading && !data) return (
         <div className="min-h-full flex items-center justify-center">
@@ -194,7 +219,7 @@ export default function Dashboard() {
                     <Zap className="text-ctp-yellow fill-current" /> Daily Missions
                 </h2>
                 <div className="grid gap-4">
-                    {data.tasks.map((t) => {
+                    {sortedTasks.map((t) => {
                         const isCompleted = t.status === 'COMPLETED';
                         const isVerifying = t.status === 'VERIFYING';
 

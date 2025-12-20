@@ -31,4 +31,13 @@ export interface DashboardData {
     streak: number;
     studyProgramName: string;
     tasks: UserTask[];
+    unlockedAchievementIds: number[];
+}
+
+export interface Achievement {
+    id: number;
+    name: string;
+    description: string;
+    conditionValue?: number;
+    criteriaType?: string;
 }
