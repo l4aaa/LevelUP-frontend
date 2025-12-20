@@ -129,6 +129,7 @@ export default function Dashboard() {
 
     return (
         <div className="p-6 md:p-12 max-w-6xl mx-auto">
+            {/* Header */}
             <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6">
                 <div>
                     <h1 className="text-4xl font-extrabold text-ctp-text mb-2">
@@ -153,7 +154,9 @@ export default function Dashboard() {
                 </div>
             </header>
 
+            {/* Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+                {/* Level Card */}
                 <div className="bg-ctp-surface0 p-6 rounded-2xl border border-ctp-surface1 relative overflow-hidden group hover:border-ctp-yellow/50 transition-colors">
                     <div className="absolute -right-4 -top-4 bg-ctp-yellow/10 w-24 h-24 rounded-full blur-2xl group-hover:bg-ctp-yellow/20 transition-all"></div>
                     <div className="flex items-center gap-5 relative z-10">
@@ -167,6 +170,7 @@ export default function Dashboard() {
                     </div>
                 </div>
 
+                {/* XP Card */}
                 <div className="bg-ctp-surface0 p-6 rounded-2xl border border-ctp-surface1 relative overflow-hidden group hover:border-ctp-green/50 transition-colors">
                     <div className="absolute -right-4 -top-4 bg-ctp-green/10 w-24 h-24 rounded-full blur-2xl group-hover:bg-ctp-green/20 transition-all"></div>
                     <div className="flex items-center gap-5 relative z-10">
@@ -181,6 +185,7 @@ export default function Dashboard() {
                 </div>
             </div>
 
+            {/* Level Progress */}
             <div className="bg-ctp-surface0 p-8 rounded-2xl border border-ctp-surface1 mb-10 shadow-lg shadow-ctp-base/50">
                 <div className="flex justify-between items-end mb-4">
                     <div>
@@ -194,7 +199,10 @@ export default function Dashboard() {
                 <div className="h-4 bg-ctp-surface1 rounded-full overflow-hidden p-1">
                     <div
                         className="h-full rounded-full bg-gradient-to-r from-ctp-blue to-ctp-mauve relative"
-                        style={{ width: `${progressPercent === 0 ? 5 : progressPercent}%`, transition: 'width 1s cubic-bezier(0.4, 0, 0.2, 1)' }}
+                        style={{
+                            width: `${progressPercent}%`,
+                            transition: 'width 1s cubic-bezier(0.4, 0, 0.2, 1)'
+                        }}
                     >
                         <div className="absolute inset-0 bg-white/20 animate-[pulse_2s_infinite]"></div>
                     </div>
@@ -204,6 +212,7 @@ export default function Dashboard() {
                 </p>
             </div>
 
+            {/* Missions */}
             <div>
                 <h2 className="text-2xl font-bold mb-6 text-ctp-text flex items-center gap-2">
                     <Zap className="text-ctp-yellow fill-current" /> Daily Missions
@@ -224,7 +233,7 @@ export default function Dashboard() {
                                 }
                                 `}
                             >
-                                <div className="flex items-center gap-5">
+                                <div className="flex items-center gap-5 flex-1">
                                     <button
                                         onClick={() => t.status === 'PENDING' && completeTask(t.userTaskId)}
                                         disabled={t.status !== 'PENDING'}
@@ -243,11 +252,16 @@ export default function Dashboard() {
                                         {isVerifying && <Loader2 size={24} className="animate-spin" />}
                                     </button>
 
-                                    <div>
+                                    <div className="flex-1 min-w-0 pr-4">
                                         <h3 className={`font-semibold text-lg ${isCompleted ? 'text-ctp-overlay1 line-through' : 'text-ctp-text'}`}>
                                             {t.task.title}
                                         </h3>
-                                        <div className="flex items-center gap-3 mt-1">
+                                        {/* Description Added Here */}
+                                        <p className={`text-sm mt-1 mb-2 ${isCompleted ? 'text-ctp-surface2' : 'text-ctp-subtext0'}`}>
+                                            {t.task.description}
+                                        </p>
+
+                                        <div className="flex items-center gap-3">
                                             <span className="text-xs px-2 py-0.5 rounded text-ctp-subtext1 bg-ctp-surface1 font-medium border border-ctp-surface2">
                                                 {t.task.category}
                                             </span>
@@ -261,7 +275,7 @@ export default function Dashboard() {
                                 </div>
 
                                 <div className={`
-                                    font-bold text-sm px-4 py-2 rounded-xl whitespace-nowrap
+                                    font-bold text-sm px-4 py-2 rounded-xl whitespace-nowrap self-start mt-1
                                     ${isCompleted ? 'text-ctp-overlay1 bg-transparent' : 'text-ctp-base bg-ctp-mauve'}
                                 `}>
                                     +{t.task.xpReward} XP
@@ -272,6 +286,7 @@ export default function Dashboard() {
                 </div>
             </div>
 
+            {/* Popups */}
             {toast && (
                 <Toast
                     type={toast.type}

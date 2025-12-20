@@ -19,6 +19,7 @@ export interface User {
 export interface TaskDetail {
     id: number;
     title: string;
+    description: string;
     category: string;
     xpReward: number;
 }
