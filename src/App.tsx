@@ -7,6 +7,8 @@ import Dashboard from './pages/Dashboard';
 import Leaderboard from './pages/Leaderboard';
 import Achievements from './pages/Achievements';
 import Landing from './pages/Landing';
+import {JSX} from "react";
+import AdminDashboard from "./pages/AdminDashboard.tsx";
 
 function ProtectedRoute({ children }: { children: JSX.Element }) {
     const { isAuthenticated } = useAuth();
@@ -86,6 +88,13 @@ function Layout({ children }: { children: React.ReactNode }) {
     );
 }
 
+function AdminRoute({ children }: { children: JSX.Element }) {
+    const { isAuthenticated, role } = useAuth();
+    if (!isAuthenticated) return <Navigate to="/login" />;
+    if (role !== 'ADMIN') return <Navigate to="/dashboard" />;
+    return children;
+}
+
 export default function App() {
     return (
         <Router>
@@ -98,6 +107,7 @@ export default function App() {
                 <Route path="/dashboard" element={<ProtectedRoute><Layout><Dashboard /></Layout></ProtectedRoute>} />
                 <Route path="/leaderboard" element={<ProtectedRoute><Layout><Leaderboard /></Layout></ProtectedRoute>} />
                 <Route path="/achievements" element={<ProtectedRoute><Layout><Achievements /></Layout></ProtectedRoute>} />
+                <Route path="/admin" element={<AdminRoute><Layout><AdminDashboard /></Layout></AdminRoute>} />
             </Routes>
         </Router>
     );

@@ -27,8 +27,12 @@ export default function Register() {
         try {
             const payload = { ...data, studyProgramId: Number(data.studyProgramId) };
             const response = await api.post('/auth/register', payload);
-            login(response.data.token, response.data.username);
-            navigate('/dashboard');
+            login(response.data.token, response.data.username, response.data.role);
+            if (response.data.role === 'ADMIN') {
+                navigate('/admin');
+            } else {
+                navigate('/dashboard');
+            }
         } catch (err: any) {
             setServerError(err.response?.data || 'Registration failed');
         }

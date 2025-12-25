@@ -6,18 +6,23 @@ import { useNavigate, Link } from 'react-router-dom';
 import { Gamepad2, ArrowLeft } from 'lucide-react';
 
 export default function Login() {
-    const { register, handleSubmit } = useForm();
+    const { register, handleSubmit, formState: { isSubmitting } } = useForm();
     const { login } = useAuth();
     const navigate = useNavigate();
     const [error, setError] = useState('');
 
     const onSubmit = async (data: any) => {
+        setError('');
         try {
             const response = await api.post('/auth/login', data);
-            login(response.data.token, response.data.username);
-            navigate('/dashboard');
+            login(response.data.token, response.data.username, response.data.role);
+            if (response.data.role === 'ADMIN') {
+                navigate('/admin');
+            } else {
+                navigate('/dashboard');
+            }
         } catch (err: any) {
-            setError('Invalid username or password');
+            setError(err.response?.data?.message || 'Invalid username or password');
         }
     };
 
@@ -48,17 +53,19 @@ export default function Login() {
 
                 <div className="space-y-4">
                     <div>
-                        <label className="block text-xs font-bold text-ctp-subtext0 uppercase mb-1 ml-1">Username</label>
+                        <label htmlFor="username" className="block text-xs font-bold text-ctp-subtext0 uppercase mb-1 ml-1">Username</label>
                         <input
-                            {...register('username')}
+                            id="username"
+                            {...register('username', { required: 'Username is required' })}
                             className="w-full p-3 bg-ctp-mantle border border-ctp-surface1 rounded-xl text-ctp-text focus:outline-none focus:border-ctp-mauve focus:ring-1 focus:ring-ctp-mauve transition-all placeholder-ctp-overlay1"
                             placeholder="e.g. PlayerOne"
                         />
                     </div>
                     <div>
-                        <label className="block text-xs font-bold text-ctp-subtext0 uppercase mb-1 ml-1">Password</label>
+                        <label htmlFor="password" className="block text-xs font-bold text-ctp-subtext0 uppercase mb-1 ml-1">Password</label>
                         <input
-                            {...register('password')}
+                            id="password"
+                            {...register('password', { required: 'Password is required' })}
                             type="password"
                             className="w-full p-3 bg-ctp-mantle border border-ctp-surface1 rounded-xl text-ctp-text focus:outline-none focus:border-ctp-mauve focus:ring-1 focus:ring-ctp-mauve transition-all placeholder-ctp-overlay1"
                             placeholder="••••••••"
@@ -66,8 +73,12 @@ export default function Login() {
                     </div>
                 </div>
 
-                <button type="submit" className="w-full bg-ctp-mauve hover:bg-ctp-mauve/90 text-ctp-base font-bold p-3 rounded-xl mt-8 transition-transform active:scale-95">
-                    Login
+                <button 
+                    type="submit" 
+                    disabled={isSubmitting}
+                    className="w-full bg-ctp-mauve hover:bg-ctp-mauve/90 disabled:opacity-50 disabled:cursor-not-allowed text-ctp-base font-bold p-3 rounded-xl mt-8 transition-transform active:scale-95"
+                >
+                    {isSubmitting ? 'Logging in...' : 'Login'}
                 </button>
 
                 <p className="mt-6 text-center text-sm text-ctp-subtext0">
