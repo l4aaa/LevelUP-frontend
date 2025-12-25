@@ -1,31 +1,43 @@
 import { BrowserRouter as Router, Routes, Route, Navigate, Link, useLocation } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
-import { LayoutDashboard, Trophy, Award, LogOut } from 'lucide-react';
+import { LayoutDashboard, Trophy, Award, LogOut, ShieldCheck } from 'lucide-react';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import Leaderboard from './pages/Leaderboard';
 import Achievements from './pages/Achievements';
 import Landing from './pages/Landing';
-import {JSX} from "react";
-import AdminDashboard from "./pages/AdminDashboard.tsx";
+import AdminDashboard from './pages/AdminDashboard';
+import React, {type JSX} from "react";
 
 function ProtectedRoute({ children }: { children: JSX.Element }) {
     const { isAuthenticated } = useAuth();
     return isAuthenticated ? children : <Navigate to="/login" />;
 }
 
-function Navigation() {
-    const { logout } = useAuth();
-    const location = useLocation();
+function AdminRoute({ children }: { children: JSX.Element }) {
+    const { isAuthenticated, role } = useAuth();
 
-    if (['/login', '/register'].includes(location.pathname)) return null;
+    if (!isAuthenticated) return <Navigate to="/login" />;
+    if (role !== 'ADMIN') return <Navigate to="/dashboard" />;
+
+    return children;
+}
+
+function Navigation() {
+    const { logout, role } = useAuth();
+    const location = useLocation();
+    if (['/login', '/register', '/'].includes(location.pathname)) return null;
 
     const links = [
         { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
         { path: '/leaderboard', label: 'Leaderboard', icon: Trophy },
         { path: '/achievements', label: 'Achievements', icon: Award },
     ];
+
+    if (role === 'ADMIN') {
+        links.push({ path: '/admin', label: 'Admin Panel', icon: ShieldCheck });
+    }
 
     return (
         <nav className="
@@ -88,26 +100,47 @@ function Layout({ children }: { children: React.ReactNode }) {
     );
 }
 
-function AdminRoute({ children }: { children: JSX.Element }) {
-    const { isAuthenticated, role } = useAuth();
-    if (!isAuthenticated) return <Navigate to="/login" />;
-    if (role !== 'ADMIN') return <Navigate to="/dashboard" />;
-    return children;
-}
-
 export default function App() {
     return (
         <Router>
             <Routes>
                 <Route path="/" element={<Landing />} />
-
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
 
-                <Route path="/dashboard" element={<ProtectedRoute><Layout><Dashboard /></Layout></ProtectedRoute>} />
-                <Route path="/leaderboard" element={<ProtectedRoute><Layout><Leaderboard /></Layout></ProtectedRoute>} />
-                <Route path="/achievements" element={<ProtectedRoute><Layout><Achievements /></Layout></ProtectedRoute>} />
-                <Route path="/admin" element={<AdminRoute><Layout><AdminDashboard /></Layout></AdminRoute>} />
+                {/* User Routes */}
+                <Route path="/dashboard" element={
+                    <ProtectedRoute>
+                        <Layout>
+                            <Dashboard />
+                        </Layout>
+                    </ProtectedRoute>
+                } />
+
+                <Route path="/leaderboard" element={
+                    <ProtectedRoute>
+                        <Layout>
+                            <Leaderboard />
+                        </Layout>
+                    </ProtectedRoute>
+                } />
+
+                <Route path="/achievements" element={
+                    <ProtectedRoute>
+                        <Layout>
+                            <Achievements />
+                        </Layout>
+                    </ProtectedRoute>
+                } />
+
+                {/* Admin Route */}
+                <Route path="/admin" element={
+                    <AdminRoute>
+                        <Layout>
+                            <AdminDashboard />
+                        </Layout>
+                    </AdminRoute>
+                } />
             </Routes>
         </Router>
     );
