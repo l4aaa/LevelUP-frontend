@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
+import {useEffect, useState} from 'react';
 import api from '../services/api';
-import { Lock, Unlock, Trophy, Loader, AlertCircle } from 'lucide-react';
+import {AlertCircle, Loader, Lock, Trophy, Unlock} from 'lucide-react';
 
 interface Achievement {
     id: number;
@@ -41,14 +41,14 @@ export default function Achievements() {
 
     if (loading) return (
         <div className="min-h-full flex items-center justify-center">
-            <Loader className="w-10 h-10 text-ctp-mauve animate-spin" />
+            <Loader className="w-10 h-10 text-ctp-mauve animate-spin"/>
         </div>
     );
 
     if (error) return (
         <div className="flex justify-center p-12">
             <div className="bg-ctp-red/10 p-6 rounded-xl border border-ctp-red/20 text-ctp-red flex items-center gap-3">
-                <AlertCircle /> {error}
+                <AlertCircle/> {error}
             </div>
         </div>
     );
@@ -58,12 +58,13 @@ export default function Achievements() {
             <div className="max-w-6xl mx-auto">
                 <div className="flex items-center gap-4 mb-10">
                     <div className="bg-ctp-yellow text-ctp-base p-4 rounded-2xl shadow-lg shadow-ctp-yellow/20">
-                        <Trophy className="w-8 h-8" />
+                        <Trophy className="w-8 h-8"/>
                     </div>
                     <div>
                         <h1 className="text-3xl font-bold text-ctp-text">Achievements Gallery</h1>
                         <p className="text-ctp-subtext0 mt-1">
-                            Unlocked: <span className="text-ctp-green font-bold">{unlockedIds.size}</span> / {allAchievements.length} badges
+                            Unlocked: <span
+                            className="text-ctp-green font-bold">{unlockedIds.size}</span> / {allAchievements.length} badges
                         </p>
                     </div>
                 </div>
@@ -90,7 +91,7 @@ export default function Achievements() {
                                     : 'bg-ctp-surface1 text-ctp-overlay0'
                                 }
                                 `}>
-                                    {isUnlocked ? <Unlock size={32} /> : <Lock size={32} />}
+                                    {isUnlocked ? <Unlock size={32}/> : <Lock size={32}/>}
                                 </div>
 
                                 <h3 className={`font-bold text-xl mb-2 ${isUnlocked ? 'text-ctp-text' : 'text-ctp-overlay1'}`}>

@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
+import {useEffect, useState} from 'react';
 import api from '../services/api';
-import { useAuth } from '../context/AuthContext';
-import { Trophy, Medal } from 'lucide-react';
+import {useAuth} from '../context/AuthContext';
+import {Medal, Trophy} from 'lucide-react';
 
 interface LeaderboardEntry {
     username: string;
@@ -10,7 +10,7 @@ interface LeaderboardEntry {
 }
 
 export default function Leaderboard() {
-    const { username } = useAuth();
+    const {username} = useAuth();
     const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
 
     useEffect(() => {
@@ -20,9 +20,9 @@ export default function Leaderboard() {
     }, []);
 
     const getRankIcon = (index: number) => {
-        if (index === 0) return <Trophy className="text-ctp-yellow fill-ctp-yellow" size={20} />;
-        if (index === 1) return <Medal className="text-ctp-subtext1" size={20} />;
-        if (index === 2) return <Medal className="text-ctp-maroon" size={20} />;
+        if (index === 0) return <Trophy className="text-ctp-yellow fill-ctp-yellow" size={20}/>;
+        if (index === 1) return <Medal className="text-ctp-subtext1" size={20}/>;
+        if (index === 2) return <Medal className="text-ctp-maroon" size={20}/>;
         return <span className="text-ctp-overlay1 font-mono">#{index + 1}</span>;
     };
 
@@ -36,7 +36,8 @@ export default function Leaderboard() {
 
                 <div className="bg-ctp-surface0 rounded-2xl shadow-xl overflow-hidden border border-ctp-surface1">
                     <table className="w-full text-left border-collapse">
-                        <thead className="bg-ctp-mantle border-b border-ctp-surface1 text-ctp-subtext1 uppercase text-xs tracking-wider">
+                        <thead
+                            className="bg-ctp-mantle border-b border-ctp-surface1 text-ctp-subtext1 uppercase text-xs tracking-wider">
                         <tr>
                             <th className="p-5 font-semibold">Rank</th>
                             <th className="p-5 font-semibold">Student</th>
@@ -61,11 +62,13 @@ export default function Leaderboard() {
                                     <td className="p-5">
                                         <div className="font-medium text-ctp-text flex items-center gap-2">
                                             {entry.username}
-                                            {isMe && <span className="text-[10px] bg-ctp-blue text-ctp-base px-1.5 rounded font-bold">YOU</span>}
+                                            {isMe && <span
+                                                className="text-[10px] bg-ctp-blue text-ctp-base px-1.5 rounded font-bold">YOU</span>}
                                         </div>
                                     </td>
                                     <td className="p-5 text-ctp-subtext0">
-                                        <span className="bg-ctp-surface1 px-2 py-1 rounded text-xs">Lvl {entry.currentLevel}</span>
+                                        <span
+                                            className="bg-ctp-surface1 px-2 py-1 rounded text-xs">Lvl {entry.currentLevel}</span>
                                     </td>
                                     <td className="p-5 text-right font-bold text-ctp-mauve font-mono">{entry.currentXp.toLocaleString()}</td>
                                 </tr>

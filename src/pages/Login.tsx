@@ -1,13 +1,13 @@
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import {useState} from 'react';
+import {useForm} from 'react-hook-form';
 import api from '../services/api';
-import { useAuth } from '../context/AuthContext';
-import { useNavigate, Link } from 'react-router-dom';
-import { Gamepad2, ArrowLeft } from 'lucide-react';
+import {useAuth} from '../context/AuthContext';
+import {Link, useNavigate} from 'react-router-dom';
+import {ArrowLeft, Gamepad2} from 'lucide-react';
 
 export default function Login() {
-    const { register, handleSubmit, formState: { isSubmitting } } = useForm();
-    const { login } = useAuth();
+    const {register, handleSubmit, formState: {isSubmitting}} = useForm();
+    const {login} = useAuth();
     const navigate = useNavigate();
     const [error, setError] = useState('');
 
@@ -32,40 +32,44 @@ export default function Login() {
                 to="/"
                 className="absolute top-6 left-6 flex items-center gap-2 text-ctp-subtext0 hover:text-ctp-text transition-colors z-50 font-medium"
             >
-                <ArrowLeft size={20} />
+                <ArrowLeft size={20}/>
                 <span>Back to Home</span>
             </Link>
 
             <div className="absolute top-10 left-10 w-64 h-64 bg-ctp-mauve/20 rounded-full blur-3xl"></div>
             <div className="absolute bottom-10 right-10 w-64 h-64 bg-ctp-blue/20 rounded-full blur-3xl"></div>
 
-            <form onSubmit={handleSubmit(onSubmit)} className="bg-ctp-surface0 p-8 rounded-2xl shadow-2xl w-full max-w-sm border border-ctp-surface1 relative z-10">
+            <form onSubmit={handleSubmit(onSubmit)}
+                  className="bg-ctp-surface0 p-8 rounded-2xl shadow-2xl w-full max-w-sm border border-ctp-surface1 relative z-10">
                 <div className="flex justify-center mb-6">
                     <div className="bg-ctp-mauve p-3 rounded-xl text-ctp-base">
-                        <Gamepad2 size={32} />
+                        <Gamepad2 size={32}/>
                     </div>
                 </div>
 
                 <h2 className="text-2xl font-bold mb-2 text-center text-ctp-text">Welcome Back</h2>
                 <p className="text-center text-ctp-subtext0 mb-6 text-sm">Resume your learning journey</p>
 
-                {error && <div className="bg-ctp-red/10 border border-ctp-red/20 text-ctp-red text-sm p-3 rounded-lg mb-4 text-center">{error}</div>}
+                {error && <div
+                    className="bg-ctp-red/10 border border-ctp-red/20 text-ctp-red text-sm p-3 rounded-lg mb-4 text-center">{error}</div>}
 
                 <div className="space-y-4">
                     <div>
-                        <label htmlFor="username" className="block text-xs font-bold text-ctp-subtext0 uppercase mb-1 ml-1">Username</label>
+                        <label htmlFor="username"
+                               className="block text-xs font-bold text-ctp-subtext0 uppercase mb-1 ml-1">Username</label>
                         <input
                             id="username"
-                            {...register('username', { required: 'Username is required' })}
+                            {...register('username', {required: 'Username is required'})}
                             className="w-full p-3 bg-ctp-mantle border border-ctp-surface1 rounded-xl text-ctp-text focus:outline-none focus:border-ctp-mauve focus:ring-1 focus:ring-ctp-mauve transition-all placeholder-ctp-overlay1"
                             placeholder="e.g. PlayerOne"
                         />
                     </div>
                     <div>
-                        <label htmlFor="password" className="block text-xs font-bold text-ctp-subtext0 uppercase mb-1 ml-1">Password</label>
+                        <label htmlFor="password"
+                               className="block text-xs font-bold text-ctp-subtext0 uppercase mb-1 ml-1">Password</label>
                         <input
                             id="password"
-                            {...register('password', { required: 'Password is required' })}
+                            {...register('password', {required: 'Password is required'})}
                             type="password"
                             className="w-full p-3 bg-ctp-mantle border border-ctp-surface1 rounded-xl text-ctp-text focus:outline-none focus:border-ctp-mauve focus:ring-1 focus:ring-ctp-mauve transition-all placeholder-ctp-overlay1"
                             placeholder="••••••••"
@@ -73,8 +77,8 @@ export default function Login() {
                     </div>
                 </div>
 
-                <button 
-                    type="submit" 
+                <button
+                    type="submit"
                     disabled={isSubmitting}
                     className="w-full bg-ctp-mauve hover:bg-ctp-mauve/90 disabled:opacity-50 disabled:cursor-not-allowed text-ctp-base font-bold p-3 rounded-xl mt-8 transition-transform active:scale-95"
                 >
@@ -82,7 +86,9 @@ export default function Login() {
                 </button>
 
                 <p className="mt-6 text-center text-sm text-ctp-subtext0">
-                    New player? <Link to="/register" className="text-ctp-blue hover:text-ctp-sapphire font-semibold hover:underline">Create Account</Link>
+                    New player? <Link to="/register"
+                                      className="text-ctp-blue hover:text-ctp-sapphire font-semibold hover:underline">Create
+                    Account</Link>
                 </p>
             </form>
         </div>

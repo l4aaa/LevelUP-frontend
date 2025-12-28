@@ -1,12 +1,12 @@
-import { Trophy } from 'lucide-react';
-import { useEffect } from 'react';
+import {Trophy} from 'lucide-react';
+import {useEffect} from 'react';
 
 interface Props {
     name: string;
     onClose: () => void;
 }
 
-export default function AchievementPopup({ name, onClose }: Props) {
+export default function AchievementPopup({name, onClose}: Props) {
     useEffect(() => {
         const timer = setTimeout(onClose, 4000);
         return () => clearTimeout(timer);
@@ -21,7 +21,7 @@ export default function AchievementPopup({ name, onClose }: Props) {
         ">
             <div className="flex items-center gap-4">
                 <div className="bg-ctp-yellow p-3 rounded-xl text-ctp-base">
-                    <Trophy size={26} />
+                    <Trophy size={26}/>
                 </div>
                 <div>
                     <p className="text-xs text-ctp-subtext0 uppercase font-bold">Achievement Unlocked</p>

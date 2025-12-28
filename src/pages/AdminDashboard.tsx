@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
+import {useEffect, useState} from 'react';
 import api from '../services/api';
-import { Trash2, Edit, Save, X, AlertCircle } from 'lucide-react';
+import {AlertCircle, Edit, Save, Trash2, X} from 'lucide-react';
 
 interface User {
     id: number;
@@ -72,8 +72,9 @@ export default function AdminDashboard() {
 
             {/* Error Banner */}
             {error && (
-                <div className="bg-ctp-red/10 border border-ctp-red/20 text-ctp-red p-4 rounded-xl mb-6 flex items-center gap-2">
-                    <AlertCircle size={20} />
+                <div
+                    className="bg-ctp-red/10 border border-ctp-red/20 text-ctp-red p-4 rounded-xl mb-6 flex items-center gap-2">
+                    <AlertCircle size={20}/>
                     <span>{error}</span>
                 </div>
             )}
@@ -94,7 +95,8 @@ export default function AdminDashboard() {
                         </thead>
                         <tbody>
                         {users.map(user => (
-                            <tr key={user.id} className="border-b border-ctp-surface1 last:border-0 hover:bg-ctp-surface1/30 transition-colors">
+                            <tr key={user.id}
+                                className="border-b border-ctp-surface1 last:border-0 hover:bg-ctp-surface1/30 transition-colors">
                                 <td className="p-4 text-ctp-overlay1 font-mono">#{user.id}</td>
 
                                 {editingId === user.id ? (
@@ -114,7 +116,10 @@ export default function AdminDashboard() {
                                                 min="1"
                                                 className="bg-ctp-base p-2 rounded w-20 border border-ctp-surface2 focus:border-ctp-mauve outline-none text-ctp-text"
                                                 value={editForm.currentLevel}
-                                                onChange={e => setEditForm({...editForm, currentLevel: parseInt(e.target.value)})}
+                                                onChange={e => setEditForm({
+                                                    ...editForm,
+                                                    currentLevel: parseInt(e.target.value)
+                                                })}
                                             />
                                         </td>
                                         <td className="p-2">
@@ -123,7 +128,10 @@ export default function AdminDashboard() {
                                                 min="0"
                                                 className="bg-ctp-base p-2 rounded w-24 border border-ctp-surface2 focus:border-ctp-mauve outline-none text-ctp-text"
                                                 value={editForm.currentXp}
-                                                onChange={e => setEditForm({...editForm, currentXp: parseInt(e.target.value)})}
+                                                onChange={e => setEditForm({
+                                                    ...editForm,
+                                                    currentXp: parseInt(e.target.value)
+                                                })}
                                             />
                                         </td>
                                         <td className="p-2">
@@ -132,7 +140,10 @@ export default function AdminDashboard() {
                                                 min="0"
                                                 className="bg-ctp-base p-2 rounded w-20 border border-ctp-surface2 focus:border-ctp-mauve outline-none text-ctp-text"
                                                 value={editForm.streak}
-                                                onChange={e => setEditForm({...editForm, streak: parseInt(e.target.value)})}
+                                                onChange={e => setEditForm({
+                                                    ...editForm,
+                                                    streak: parseInt(e.target.value)
+                                                })}
                                             />
                                         </td>
                                         <td className="p-2">
@@ -146,11 +157,15 @@ export default function AdminDashboard() {
                                             </select>
                                         </td>
                                         <td className="p-4 flex gap-2">
-                                            <button onClick={saveEdit} className="p-2 bg-ctp-green/10 text-ctp-green rounded-lg hover:bg-ctp-green/20 transition-colors" title="Save">
-                                                <Save size={18} />
+                                            <button onClick={saveEdit}
+                                                    className="p-2 bg-ctp-green/10 text-ctp-green rounded-lg hover:bg-ctp-green/20 transition-colors"
+                                                    title="Save">
+                                                <Save size={18}/>
                                             </button>
-                                            <button onClick={cancelEdit} className="p-2 bg-ctp-red/10 text-ctp-red rounded-lg hover:bg-ctp-red/20 transition-colors" title="Cancel">
-                                                <X size={18} />
+                                            <button onClick={cancelEdit}
+                                                    className="p-2 bg-ctp-red/10 text-ctp-red rounded-lg hover:bg-ctp-red/20 transition-colors"
+                                                    title="Cancel">
+                                                <X size={18}/>
                                             </button>
                                         </td>
                                     </>
@@ -172,11 +187,15 @@ export default function AdminDashboard() {
                                                 </span>
                                         </td>
                                         <td className="p-4 flex gap-3">
-                                            <button onClick={() => startEdit(user)} className="text-ctp-overlay2 hover:text-ctp-blue transition-colors" title="Edit User">
-                                                <Edit size={18} />
+                                            <button onClick={() => startEdit(user)}
+                                                    className="text-ctp-overlay2 hover:text-ctp-blue transition-colors"
+                                                    title="Edit User">
+                                                <Edit size={18}/>
                                             </button>
-                                            <button onClick={() => handleDelete(user.id)} className="text-ctp-overlay2 hover:text-ctp-red transition-colors" title="Delete User">
-                                                <Trash2 size={18} />
+                                            <button onClick={() => handleDelete(user.id)}
+                                                    className="text-ctp-overlay2 hover:text-ctp-red transition-colors"
+                                                    title="Delete User">
+                                                <Trash2 size={18}/>
                                             </button>
                                         </td>
                                     </>

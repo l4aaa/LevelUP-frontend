@@ -1,6 +1,6 @@
-import { BrowserRouter as Router, Routes, Route, Navigate, Link, useLocation } from 'react-router-dom';
-import { useAuth } from './context/AuthContext';
-import { LayoutDashboard, Trophy, Award, LogOut, ShieldCheck } from 'lucide-react';
+import {BrowserRouter as Router, Link, Navigate, Route, Routes, useLocation} from 'react-router-dom';
+import {useAuth} from './context/AuthContext';
+import {Award, LayoutDashboard, LogOut, ShieldCheck, Trophy} from 'lucide-react';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
@@ -10,33 +10,33 @@ import Landing from './pages/Landing';
 import AdminDashboard from './pages/AdminDashboard';
 import React, {type JSX} from "react";
 
-function ProtectedRoute({ children }: { children: JSX.Element }) {
-    const { isAuthenticated } = useAuth();
-    return isAuthenticated ? children : <Navigate to="/login" />;
+function ProtectedRoute({children}: { children: JSX.Element }) {
+    const {isAuthenticated} = useAuth();
+    return isAuthenticated ? children : <Navigate to="/login"/>;
 }
 
-function AdminRoute({ children }: { children: JSX.Element }) {
-    const { isAuthenticated, role } = useAuth();
+function AdminRoute({children}: { children: JSX.Element }) {
+    const {isAuthenticated, role} = useAuth();
 
-    if (!isAuthenticated) return <Navigate to="/login" />;
-    if (role !== 'ADMIN') return <Navigate to="/dashboard" />;
+    if (!isAuthenticated) return <Navigate to="/login"/>;
+    if (role !== 'ADMIN') return <Navigate to="/dashboard"/>;
 
     return children;
 }
 
 function Navigation() {
-    const { logout, role } = useAuth();
+    const {logout, role} = useAuth();
     const location = useLocation();
     if (['/login', '/register', '/'].includes(location.pathname)) return null;
 
     const links = [
-        { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-        { path: '/leaderboard', label: 'Leaderboard', icon: Trophy },
-        { path: '/achievements', label: 'Achievements', icon: Award },
+        {path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard},
+        {path: '/leaderboard', label: 'Leaderboard', icon: Trophy},
+        {path: '/achievements', label: 'Achievements', icon: Award},
     ];
 
     if (role === 'ADMIN') {
-        links.push({ path: '/admin', label: 'Admin Panel', icon: ShieldCheck });
+        links.push({path: '/admin', label: 'Admin Panel', icon: ShieldCheck});
     }
 
     return (
@@ -47,7 +47,7 @@ function Navigation() {
         ">
             <div className="hidden md:flex items-center gap-3 mb-10 px-2 mt-4">
                 <div className="bg-ctp-mauve text-ctp-base p-2.5 rounded-xl shadow-lg shadow-ctp-mauve/20">
-                    <Trophy size={24} strokeWidth={2.5} />
+                    <Trophy size={24} strokeWidth={2.5}/>
                 </div>
                 <h1 className="text-2xl font-bold text-ctp-text tracking-tight">LevelUp</h1>
             </div>
@@ -82,17 +82,17 @@ function Navigation() {
                 onClick={logout}
                 className="hidden md:flex items-center gap-4 px-4 py-3.5 text-ctp-red hover:bg-ctp-red/10 rounded-xl w-full mt-auto transition-colors font-medium"
             >
-                <LogOut size={20} />
+                <LogOut size={20}/>
                 <span>Logout</span>
             </button>
         </nav>
     );
 }
 
-function Layout({ children }: { children: React.ReactNode }) {
+function Layout({children}: { children: React.ReactNode }) {
     return (
         <div className="flex flex-col md:flex-row min-h-screen bg-ctp-base text-ctp-text font-sans">
-            <Navigation />
+            <Navigation/>
             <main className="flex-1 h-screen overflow-y-auto pb-24 md:pb-0">
                 {children}
             </main>
@@ -104,43 +104,43 @@ export default function App() {
     return (
         <Router>
             <Routes>
-                <Route path="/" element={<Landing />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<Register />} />
+                <Route path="/" element={<Landing/>}/>
+                <Route path="/login" element={<Login/>}/>
+                <Route path="/register" element={<Register/>}/>
 
                 {/* User Routes */}
                 <Route path="/dashboard" element={
                     <ProtectedRoute>
                         <Layout>
-                            <Dashboard />
+                            <Dashboard/>
                         </Layout>
                     </ProtectedRoute>
-                } />
+                }/>
 
                 <Route path="/leaderboard" element={
                     <ProtectedRoute>
                         <Layout>
-                            <Leaderboard />
+                            <Leaderboard/>
                         </Layout>
                     </ProtectedRoute>
-                } />
+                }/>
 
                 <Route path="/achievements" element={
                     <ProtectedRoute>
                         <Layout>
-                            <Achievements />
+                            <Achievements/>
                         </Layout>
                     </ProtectedRoute>
-                } />
+                }/>
 
                 {/* Admin Route */}
                 <Route path="/admin" element={
                     <AdminRoute>
                         <Layout>
-                            <AdminDashboard />
+                            <AdminDashboard/>
                         </Layout>
                     </AdminRoute>
-                } />
+                }/>
             </Routes>
         </Router>
     );
