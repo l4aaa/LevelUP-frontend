@@ -11,6 +11,13 @@ interface StudyProgram {
     name: string;
 }
 
+interface RegisterFormData {
+    username: string;
+    email: string;
+    studyProgramId: string;
+    password: string;
+}
+
 export default function Register() {
     const {register, handleSubmit, formState: {errors}} = useForm();
     const {login} = useAuth();
