@@ -1,6 +1,7 @@
 import {useEffect, useState} from 'react';
 import api from '../services/api';
-import {AlertCircle, Edit, Save, Trash2, X} from 'lucide-react';
+import {AlertCircle, Edit, Save, Trash2, X, Loader2} from 'lucide-react';
+import {isAxiosError} from 'axios';
 
 interface User {
     id: number;
@@ -14,14 +15,22 @@ interface User {
 
 export default function AdminDashboard() {
     const [users, setUsers] = useState<User[]>([]);
+    const [loading, setLoading] = useState(true);
     const [editingId, setEditingId] = useState<number | null>(null);
     const [editForm, setEditForm] = useState<Partial<User>>({});
     const [error, setError] = useState<string | null>(null);
 
-    const fetchUsers = () => {
-        api.get('/admin/users')
-            .then(res => setUsers(res.data))
-            .catch(err => console.error("Failed to fetch users", err));
+    const fetchUsers = async () => {
+        try {
+            setLoading(true);
+            const res = await api.get('/admin/users');
+            setUsers(res.data);
+        } catch (err) {
+            console.error("Failed to fetch users", err);
+            setError("Failed to load user list.");
+        } finally {
+            setLoading(false);
+        }
     };
 
     useEffect(() => {
@@ -29,13 +38,16 @@ export default function AdminDashboard() {
     }, []);
 
     const handleDelete = async (id: number) => {
-        if (confirm('Are you sure you want to delete this user? This cannot be undone.')) {
-            try {
-                await api.delete(`/admin/users/${id}`);
-                setUsers(users.filter(u => u.id !== id));
-            } catch (err) {
-                alert("Failed to delete user.");
-            }
+        if (!confirm('Are you sure you want to delete this user? This cannot be undone.')) return;
+
+        try {
+            await api.delete(`/admin/users/${id}`);
+            setUsers(users.filter(u => u.id !== id));
+        } catch (err) {
+            const msg = isAxiosError(err) && err.response?.data
+                ? typeof err.response.data === 'string' ? err.response.data : JSON.stringify(err.response.data)
+                : "Failed to delete user.";
+            alert(msg);
         }
     };
 
@@ -57,14 +69,24 @@ export default function AdminDashboard() {
 
         try {
             const response = await api.put(`/admin/users/${editingId}`, editForm);
-
             setUsers(users.map(u => u.id === editingId ? response.data : u));
             setEditingId(null);
             setEditForm({});
-        } catch (err: any) {
-            setError(err.response?.data || "Failed to update user.");
+        } catch (err) {
+            if (isAxiosError(err) && err.response) {
+                const data = err.response.data;
+                setError(typeof data === 'string' ? data : (data as any).message || "Update failed");
+            } else {
+                setError("An unexpected error occurred.");
+            }
         }
     };
+
+    if (loading) return (
+        <div className="min-h-screen flex items-center justify-center">
+            <Loader2 className="w-10 h-10 text-ctp-mauve animate-spin"/>
+        </div>
+    );
 
     return (
         <div className="p-6 md:p-12 max-w-7xl mx-auto">
@@ -72,8 +94,7 @@ export default function AdminDashboard() {
 
             {/* Error Banner */}
             {error && (
-                <div
-                    className="bg-ctp-red/10 border border-ctp-red/20 text-ctp-red p-4 rounded-xl mb-6 flex items-center gap-2">
+                <div className="bg-ctp-red/10 border border-ctp-red/20 text-ctp-red p-4 rounded-xl mb-6 flex items-center gap-2">
                     <AlertCircle size={20}/>
                     <span>{error}</span>
                 </div>
@@ -177,14 +198,14 @@ export default function AdminDashboard() {
                                         <td className="p-4 text-ctp-mauve font-mono">{user.currentXp.toLocaleString()}</td>
                                         <td className="p-4 text-ctp-peach font-mono">{user.streak}</td>
                                         <td className="p-4">
-                                                <span className={`
+                                            <span className={`
                                                     px-2.5 py-1 rounded-md text-xs font-bold uppercase tracking-wide
                                                     ${user.role === 'ADMIN'
-                                                    ? 'bg-ctp-red/10 text-ctp-red border border-ctp-red/20'
-                                                    : 'bg-ctp-blue/10 text-ctp-blue border border-ctp-blue/20'}
-                                                `}>
+                                                ? 'bg-ctp-red/10 text-ctp-red border border-ctp-red/20'
+                                                : 'bg-ctp-blue/10 text-ctp-blue border border-ctp-blue/20'}
+                                            `}>
                                                     {user.role}
-                                                </span>
+                                            </span>
                                         </td>
                                         <td className="p-4 flex gap-3">
                                             <button onClick={() => startEdit(user)}

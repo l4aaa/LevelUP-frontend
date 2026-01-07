@@ -9,20 +9,20 @@ import AchievementPopup from '../components/AchievementPopup';
 export default function Dashboard() {
     const [data, setData] = useState<DashboardData | null>(null);
     const [loading, setLoading] = useState(true);
-    const shouldPoll = useRef(false);
+
     const [toast, setToast] = useState<{ type: ToastType; message: string } | null>(null);
     const [showConfetti, setShowConfetti] = useState(false);
     const [achievementPopup, setAchievementPopup] = useState<string | null>(null);
 
     const unlockedRef = useRef<number[]>([]);
     const achievementsRef = useRef<Achievement[]>([]);
-    const isFetching = useRef(false);
+
+    const hasVerifyingTasks = data?.tasks.some(t => t.status === 'VERIFYING');
 
     const fetchDashboard = async (isBackground = false) => {
-        if (isFetching.current) return;
-        isFetching.current = true;
         try {
             if (!isBackground) setLoading(true);
+
             const response = await api.get('/dashboard');
             const newData: DashboardData = response.data;
 
@@ -32,7 +32,6 @@ export default function Dashboard() {
                         type: 'LEVEL',
                         message: `LEVEL UP! You reached Level ${newData.level} 🎉`
                     });
-
                     setShowConfetti(true);
                     setTimeout(() => setShowConfetti(false), 5000);
                 }
@@ -52,12 +51,10 @@ export default function Dashboard() {
                 unlockedRef.current = newData.unlockedAchievementIds || [];
                 return newData;
             });
-            shouldPoll.current = newData.tasks.some(t => t.status === 'VERIFYING');
         } catch (error) {
             console.error("Failed to fetch dashboard", error);
         } finally {
             if (!isBackground) setLoading(false);
-            isFetching.current = false;
         }
     };
 
@@ -69,17 +66,17 @@ export default function Dashboard() {
             .catch(err => console.error("Failed to load achievement definitions", err));
 
         fetchDashboard();
-        let timer: number;
-        const loop = () => {
-            if (shouldPoll.current && !isFetching.current) {
-                fetchDashboard(true);
-            }
-            timer = setTimeout(loop, 1000);
-        };
-        loop();
-
-        return () => clearTimeout(timer);
     }, []);
+
+    useEffect(() => {
+        if (!hasVerifyingTasks) return;
+
+        const intervalId = setInterval(() => {
+            fetchDashboard(true);
+        }, 2000);
+
+        return () => clearInterval(intervalId);
+    }, [hasVerifyingTasks]);
 
     const completeTask = async (userTaskId: number) => {
         try {
@@ -94,11 +91,11 @@ export default function Dashboard() {
                 type: 'TASK',
                 message: 'Task submitted! Verifying...'
             });
-            shouldPoll.current = true;
+
             await api.post(`/tasks/${userTaskId}/complete`);
         } catch (error) {
             console.error("Failed to complete task", error);
-            fetchDashboard();
+            fetchDashboard(true);
         }
     };
 
@@ -133,12 +130,10 @@ export default function Dashboard() {
             <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6">
                 <div>
                     <h1 className="text-4xl font-extrabold text-ctp-text mb-2">
-                        Welcome, <span
-                        className="text-transparent bg-clip-text bg-gradient-to-r from-ctp-mauve to-ctp-blue">{data.username}</span>!
+                        Welcome, <span className="text-transparent bg-clip-text bg-gradient-to-r from-ctp-mauve to-ctp-blue">{data.username}</span>!
                     </h1>
                     <div className="flex items-center gap-3 text-ctp-subtext0">
-                        <span
-                            className="bg-ctp-surface0 border border-ctp-surface1 text-ctp-blue text-xs px-3 py-1 rounded-full font-medium">
+                        <span className="bg-ctp-surface0 border border-ctp-surface1 text-ctp-blue text-xs px-3 py-1 rounded-full font-medium">
                             {data.studyProgramName}
                         </span>
                         <span className="text-ctp-overlay1">•</span>
@@ -159,31 +154,24 @@ export default function Dashboard() {
             {/* Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
                 {/* Level Card */}
-                <div
-                    className="bg-ctp-surface0 p-6 rounded-2xl border border-ctp-surface1 relative overflow-hidden group hover:border-ctp-yellow/50 transition-colors">
-                    <div
-                        className="absolute -right-4 -top-4 bg-ctp-yellow/10 w-24 h-24 rounded-full blur-2xl group-hover:bg-ctp-yellow/20 transition-all"></div>
+                <div className="bg-ctp-surface0 p-6 rounded-2xl border border-ctp-surface1 relative overflow-hidden group hover:border-ctp-yellow/50 transition-colors">
+                    <div className="absolute -right-4 -top-4 bg-ctp-yellow/10 w-24 h-24 rounded-full blur-2xl group-hover:bg-ctp-yellow/20 transition-all"></div>
                     <div className="flex items-center gap-5 relative z-10">
-                        <div
-                            className="p-4 bg-ctp-yellow/20 rounded-2xl text-ctp-yellow shadow-inner shadow-ctp-yellow/10">
+                        <div className="p-4 bg-ctp-yellow/20 rounded-2xl text-ctp-yellow shadow-inner shadow-ctp-yellow/10">
                             <Trophy size={32} strokeWidth={2.5}/>
                         </div>
                         <div>
-                            <p className="text-sm text-ctp-subtext0 font-medium uppercase tracking-wider">Current
-                                Level</p>
+                            <p className="text-sm text-ctp-subtext0 font-medium uppercase tracking-wider">Current Level</p>
                             <p className="text-4xl font-black text-ctp-text">{data.level}</p>
                         </div>
                     </div>
                 </div>
 
                 {/* XP Card */}
-                <div
-                    className="bg-ctp-surface0 p-6 rounded-2xl border border-ctp-surface1 relative overflow-hidden group hover:border-ctp-green/50 transition-colors">
-                    <div
-                        className="absolute -right-4 -top-4 bg-ctp-green/10 w-24 h-24 rounded-full blur-2xl group-hover:bg-ctp-green/20 transition-all"></div>
+                <div className="bg-ctp-surface0 p-6 rounded-2xl border border-ctp-surface1 relative overflow-hidden group hover:border-ctp-green/50 transition-colors">
+                    <div className="absolute -right-4 -top-4 bg-ctp-green/10 w-24 h-24 rounded-full blur-2xl group-hover:bg-ctp-green/20 transition-all"></div>
                     <div className="flex items-center gap-5 relative z-10">
-                        <div
-                            className="p-4 bg-ctp-green/20 rounded-2xl text-ctp-green shadow-inner shadow-ctp-green/10">
+                        <div className="p-4 bg-ctp-green/20 rounded-2xl text-ctp-green shadow-inner shadow-ctp-green/10">
                             <Star size={32} strokeWidth={2.5}/>
                         </div>
                         <div>
@@ -195,8 +183,7 @@ export default function Dashboard() {
             </div>
 
             {/* Level Progress */}
-            <div
-                className="bg-ctp-surface0 p-8 rounded-2xl border border-ctp-surface1 mb-10 shadow-lg shadow-ctp-base/50">
+            <div className="bg-ctp-surface0 p-8 rounded-2xl border border-ctp-surface1 mb-10 shadow-lg shadow-ctp-base/50">
                 <div className="flex justify-between items-end mb-4">
                     <div>
                         <h3 className="font-bold text-xl text-ctp-text mb-1">Level Progress</h3>
@@ -231,7 +218,6 @@ export default function Dashboard() {
                     {sortedTasks.map((t) => {
                         const isCompleted = t.status === 'COMPLETED';
                         const isVerifying = t.status === 'VERIFYING';
-
                         return (
                             <div
                                 key={t.userTaskId}
@@ -266,20 +252,17 @@ export default function Dashboard() {
                                         <h3 className={`font-semibold text-lg ${isCompleted ? 'text-ctp-overlay1 line-through' : 'text-ctp-text'}`}>
                                             {t.task.title}
                                         </h3>
-                                        {/* Description Added Here */}
                                         <p className={`text-sm mt-1 mb-2 ${isCompleted ? 'text-ctp-surface2' : 'text-ctp-subtext0'}`}>
                                             {t.task.description}
                                         </p>
 
                                         <div className="flex items-center gap-3">
-                                            <span
-                                                className="text-xs px-2 py-0.5 rounded text-ctp-subtext1 bg-ctp-surface1 font-medium border border-ctp-surface2">
+                                            <span className="text-xs px-2 py-0.5 rounded text-ctp-subtext1 bg-ctp-surface1 font-medium border border-ctp-surface2">
                                                 {t.task.category}
                                             </span>
                                             {isVerifying && (
-                                                <span
-                                                    className="text-xs text-ctp-peach font-bold animate-pulse flex items-center gap-1">
-                                                    Verifying...
+                                                <span className="text-xs text-ctp-peach font-bold animate-pulse flex items-center gap-1">
+                                                     Verifying...
                                                 </span>
                                             )}
                                         </div>
