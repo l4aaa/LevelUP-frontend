@@ -3,13 +3,14 @@ import {CheckCircle, Trophy, X} from 'lucide-react';
 
 export type ToastType = 'TASK' | 'LEVEL';
 
-interface ToastProps {
+export interface ToastProps {
     type: ToastType;
-    message: string;
+    title: string;
+    description?: string;
     onClose: () => void;
 }
 
-export default function Toast({type, message, onClose}: ToastProps) {
+export default function Toast({type, title, description, onClose}: ToastProps) {
     useEffect(() => {
         const duration = type === 'LEVEL' ? 5000 : 3500;
         const timer = setTimeout(onClose, duration);
@@ -20,20 +21,9 @@ export default function Toast({type, message, onClose}: ToastProps) {
 
     if (isLevel) {
         return (
-            <div
-                className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm animate-[fadeIn_0.3s_ease-out]">
-                <div className="
-                    bg-ctp-surface0 border-2 border-ctp-yellow
-                    p-8 rounded-3xl shadow-2xl
-                    flex flex-col items-center text-center gap-4
-                    max-w-sm w-full mx-4
-                    animate-[scaleIn_0.4s_cubic-bezier(0.175,0.885,0.32,1.275)]
-                    relative
-                ">
-                    <button
-                        onClick={onClose}
-                        className="absolute top-4 right-4 text-ctp-overlay1 hover:text-ctp-text transition-colors"
-                    >
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm animate-[fadeIn_0.3s_ease-out]">
+                <div className="bg-ctp-surface0 border-2 border-ctp-yellow p-8 rounded-3xl shadow-2xl flex flex-col items-center text-center gap-4 max-w-sm w-full mx-4 animate-[scaleIn_0.4s_cubic-bezier(0.175,0.885,0.32,1.275)] relative">
+                    <button onClick={onClose} className="absolute top-4 right-4 text-ctp-overlay1 hover:text-ctp-text transition-colors">
                         <X size={20}/>
                     </button>
 
@@ -42,17 +32,15 @@ export default function Toast({type, message, onClose}: ToastProps) {
                     </div>
 
                     <div>
-                        <h2 className="text-2xl font-black text-ctp-yellow uppercase tracking-widest mb-2">Level
-                            Up!</h2>
+                        <h2 className="text-2xl font-black text-ctp-yellow uppercase tracking-widest mb-2">
+                            {title}
+                        </h2>
                         <p className="text-lg font-medium text-ctp-text leading-relaxed">
-                            {message.replace('LEVEL UP! ', '')}
+                            {description}
                         </p>
                     </div>
 
-                    <button
-                        onClick={onClose}
-                        className="mt-4 bg-ctp-yellow text-ctp-base font-bold px-8 py-3 rounded-xl hover:bg-ctp-yellow/90 transition-transform active:scale-95 shadow-lg shadow-ctp-yellow/20"
-                    >
+                    <button onClick={onClose} className="mt-4 bg-ctp-yellow text-ctp-base font-bold px-8 py-3 rounded-xl hover:bg-ctp-yellow/90 transition-transform active:scale-95 shadow-lg shadow-ctp-yellow/20">
                         Awesome!
                     </button>
                 </div>
@@ -68,7 +56,10 @@ export default function Toast({type, message, onClose}: ToastProps) {
             bg-ctp-green/90 text-ctp-base border-ctp-green
         `}>
             <CheckCircle size={28}/>
-            <div className="font-bold">{message}</div>
+            <div>
+                <div className="font-bold">{title}</div>
+                {description && <div className="text-sm opacity-90">{description}</div>}
+            </div>
         </div>
     );
 }

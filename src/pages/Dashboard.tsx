@@ -10,7 +10,7 @@ export default function Dashboard() {
     const [data, setData] = useState<DashboardData | null>(null);
     const [loading, setLoading] = useState(true);
 
-    const [toast, setToast] = useState<{ type: ToastType; message: string } | null>(null);
+    const [toast, setToast] = useState<{ type: ToastType; title: string; description?: string } | null>(null);
     const [showConfetti, setShowConfetti] = useState(false);
     const [achievementPopup, setAchievementPopup] = useState<string | null>(null);
 
@@ -30,7 +30,8 @@ export default function Dashboard() {
                 if (prev && newData.level > prev.level) {
                     setToast({
                         type: 'LEVEL',
-                        message: `LEVEL UP! You reached Level ${newData.level} 🎉`
+                        title: 'LEVEL UP!',
+                        description: `You reached Level ${newData.level} 🎉`
                     });
                     setShowConfetti(true);
                     setTimeout(() => setShowConfetti(false), 5000);
@@ -61,7 +62,7 @@ export default function Dashboard() {
     useEffect(() => {
         api.get<Achievement[]>('/user/achievements')
             .then(res => {
-                achievementsRef.current = res.data;
+                achievementsRef.current = res.data as Achievement[];
             })
             .catch(err => console.error("Failed to load achievement definitions", err));
 
@@ -89,7 +90,8 @@ export default function Dashboard() {
 
             setToast({
                 type: 'TASK',
-                message: 'Task submitted! Verifying...'
+                title: 'Task submitted!',
+                description: 'Verifying with the server...'
             });
 
             await api.post(`/tasks/${userTaskId}/complete`);
@@ -285,7 +287,8 @@ export default function Dashboard() {
             {toast && (
                 <Toast
                     type={toast.type}
-                    message={toast.message}
+                    title={toast.title}
+                    description={toast.description}
                     onClose={() => setToast(null)}
                 />
             )}
