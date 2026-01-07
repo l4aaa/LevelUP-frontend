@@ -1,4 +1,4 @@
-import React, {createContext, ReactNode, useContext, useEffect, useState} from 'react';
+import {createContext, ReactNode, useContext, useState} from 'react';
 
 interface AuthContextType {
     isAuthenticated: boolean;
@@ -16,14 +16,6 @@ export const AuthProvider = ({children}: { children: ReactNode }) => {
     const [username, setUsername] = useState<string | null>(localStorage.getItem('username'));
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(!!token);
     const [role, setRole] = useState<string | null>(localStorage.getItem('role'));
-
-    useEffect(() => {
-        const storedToken = localStorage.getItem('token');
-        if (storedToken) {
-            setToken(storedToken);
-            setIsAuthenticated(true);
-        }
-    }, []);
 
     const login = (newToken: string, newUsername: string, newRole: string) => {
         localStorage.setItem('token', newToken);
@@ -52,6 +44,7 @@ export const AuthProvider = ({children}: { children: ReactNode }) => {
     );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useAuth = () => {
     const context = useContext(AuthContext);
     if (!context) {

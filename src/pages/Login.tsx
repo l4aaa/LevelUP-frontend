@@ -4,6 +4,7 @@ import api from '../services/api';
 import {useAuth} from '../context/AuthContext';
 import {Link, useNavigate} from 'react-router-dom';
 import {ArrowLeft, Gamepad2} from 'lucide-react';
+import {isAxiosError} from "axios";
 
 export default function Login() {
     const {register, handleSubmit, formState: {isSubmitting}} = useForm();
@@ -11,18 +12,30 @@ export default function Login() {
     const navigate = useNavigate();
     const [error, setError] = useState('');
 
-    const onSubmit = async (data: any) => {
+    interface LoginFormData {
+        username: string;
+        password: string;
+    }
+
+    const onSubmit = async (data: LoginFormData) => { // Fix: Type the data argument
         setError('');
         try {
             const response = await api.post('/auth/login', data);
             login(response.data.token, response.data.username, response.data.role);
+
             if (response.data.role === 'ADMIN') {
                 navigate('/admin');
             } else {
                 navigate('/dashboard');
             }
-        } catch (err: any) {
-            setError(err.response?.data?.message || 'Invalid username or password');
+        } catch (err) { // Fix: Remove ': any' (TypeScript defaults this to 'unknown')
+            if (isAxiosError(err) && err.response) {
+                // Safely treat response data as an object that might have a message
+                const errorData = err.response.data as { message?: string };
+                setError(errorData?.message || 'Invalid username or password');
+            } else {
+                setError('Invalid username or password');
+            }
         }
     };
 

@@ -75,7 +75,9 @@ export default function AdminDashboard() {
         } catch (err) {
             if (isAxiosError(err) && err.response) {
                 const data = err.response.data;
-                setError(typeof data === 'string' ? data : (data as any).message || "Update failed");
+                const message = (data as { message?: string })?.message;
+
+                setError(typeof data === 'string' ? data : message || "Update failed");
             } else {
                 setError("An unexpected error occurred.");
             }

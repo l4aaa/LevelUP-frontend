@@ -4,6 +4,7 @@ import api from '../services/api';
 import {useAuth} from '../context/AuthContext';
 import {Link, useNavigate} from 'react-router-dom';
 import {ArrowLeft, Rocket} from 'lucide-react';
+import {isAxiosError} from "axios";
 
 interface StudyProgram {
     id: number;
@@ -23,18 +24,26 @@ export default function Register() {
             .catch(err => console.error(err));
     }, []);
 
-    const onSubmit = async (data: any) => {
+    const onSubmit = async (data: RegisterFormData) => {
         try {
             const payload = {...data, studyProgramId: Number(data.studyProgramId)};
+
             const response = await api.post('/auth/register', payload);
             login(response.data.token, response.data.username, response.data.role);
+
             if (response.data.role === 'ADMIN') {
                 navigate('/admin');
             } else {
                 navigate('/dashboard');
             }
-        } catch (err: any) {
-            setServerError(err.response?.data || 'Registration failed');
+        } catch (err) {
+            if (isAxiosError(err) && err.response) {
+                const data = err.response.data;
+                const message = typeof data === 'string' ? data : (data as { message?: string })?.message;
+                setServerError(message || 'Registration failed');
+            } else {
+                setServerError('Registration failed');
+            }
         }
     };
 
