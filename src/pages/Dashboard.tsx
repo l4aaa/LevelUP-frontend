@@ -1,125 +1,27 @@
-import {useEffect, useMemo, useRef, useState} from 'react';
-import api from '../services/api';
-import {Calendar, CheckCircle, Circle, Loader2, Star, Trophy, Zap} from 'lucide-react';
-import type {Achievement, DashboardData} from '../types';
-import Toast, {type ToastType} from '../components/Toast';
+import { Calendar, CheckCircle, Circle, Loader2, Star, Trophy, Zap } from 'lucide-react';
+import { useDashboard } from './useDashboard';
 import Confetti from '../components/Confetti';
 import AchievementPopup from '../components/AchievementPopup';
 
 export default function Dashboard() {
-    const [data, setData] = useState<DashboardData | null>(null);
-    const [loading, setLoading] = useState(true);
-
-    const [toast, setToast] = useState<{ type: ToastType; title: string; description?: string } | null>(null);
-    const [showConfetti, setShowConfetti] = useState(false);
-    const [achievementPopup, setAchievementPopup] = useState<string | null>(null);
-
-    const unlockedRef = useRef<number[]>([]);
-    const achievementsRef = useRef<Achievement[]>([]);
-
-    const hasVerifyingTasks = data?.tasks.some(t => t.status === 'VERIFYING');
-
-    const fetchDashboard = async (isBackground = false) => {
-        try {
-            if (!isBackground) setLoading(true);
-
-            const response = await api.get('/dashboard');
-            const newData: DashboardData = response.data;
-
-            setData(prev => {
-                if (prev && newData.level > prev.level) {
-                    setToast({
-                        type: 'LEVEL',
-                        title: 'LEVEL UP!',
-                        description: `You reached Level ${newData.level} 🎉`
-                    });
-                    setShowConfetti(true);
-                    setTimeout(() => setShowConfetti(false), 5000);
-                }
-
-                if (prev) {
-                    const previousUnlocked = unlockedRef.current;
-                    const newUnlocked = newData.unlockedAchievementIds || [];
-                    const diffId = newUnlocked.find(id => !previousUnlocked.includes(id));
-
-                    if (diffId) {
-                        const achievement = achievementsRef.current.find(a => a.id === diffId);
-                        const name = achievement ? achievement.name : "New Badge";
-                        setAchievementPopup(name);
-                    }
-                }
-
-                unlockedRef.current = newData.unlockedAchievementIds || [];
-                return newData;
-            });
-        } catch (error) {
-            console.error("Failed to fetch dashboard", error);
-        } finally {
-            if (!isBackground) setLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        api.get<Achievement[]>('/user/achievements')
-            .then(res => {
-                achievementsRef.current = res.data as Achievement[];
-            })
-            .catch(err => console.error("Failed to load achievement definitions", err));
-
-        fetchDashboard();
-    }, []);
-
-    useEffect(() => {
-        if (!hasVerifyingTasks) return;
-
-        const intervalId = setInterval(() => {
-            fetchDashboard(true);
-        }, 2000);
-
-        return () => clearInterval(intervalId);
-    }, [hasVerifyingTasks]);
-
-    const completeTask = async (userTaskId: number) => {
-        try {
-            setData(prev => prev ? {
-                ...prev,
-                tasks: prev.tasks.map(t =>
-                    t.userTaskId === userTaskId ? {...t, status: 'VERIFYING'} : t
-                )
-            } : null);
-
-            setToast({
-                type: 'TASK',
-                title: 'Task submitted!',
-                description: 'Verifying with the server...'
-            });
-
-            await api.post(`/tasks/${userTaskId}/complete`);
-        } catch (error) {
-            console.error("Failed to complete task", error);
-            fetchDashboard(true);
-        }
-    };
-
-    const sortedTasks = useMemo(() => {
-        if (!data) return [];
-        return [...data.tasks].sort((a, b) => {
-            const isACompleted = a.status === 'COMPLETED';
-            const isBCompleted = b.status === 'COMPLETED';
-
-            if (isACompleted && !isBCompleted) return 1;
-            if (!isACompleted && isBCompleted) return -1;
-
-            return a.userTaskId - b.userTaskId;
-        });
-    }, [data]);
+    const {
+        data,
+        loading,
+        error,
+        showConfetti,
+        achievementPopup,
+        setAchievementPopup,
+        sortedTasks,
+        completeTask
+    } = useDashboard();
 
     if (loading && !data) return (
         <div className="min-h-full flex items-center justify-center">
-            <Loader2 className="w-10 h-10 text-ctp-mauve animate-spin"/>
+            <Loader2 className="w-10 h-10 text-ctp-mauve animate-spin" />
         </div>
     );
 
+    if (error) return <div className="p-8 text-center text-ctp-red">{error}</div>;
     if (!data) return <div className="p-8 text-center text-ctp-red">Error loading dashboard</div>;
 
     const xpPerLevel = 100;
@@ -140,12 +42,12 @@ export default function Dashboard() {
                         </span>
                         <span className="text-ctp-overlay1">•</span>
                         <span className="flex items-center gap-1 text-ctp-peach font-bold animate-pulse">
-                            <Zap size={16} fill="currentColor"/> {data.streak} Day Streak
+                            <Zap size={16} fill="currentColor" /> {data.streak} Day Streak
                         </span>
                     </div>
                 </div>
                 <div className="flex items-center gap-2 bg-ctp-surface0 p-2 rounded-xl border border-ctp-surface1">
-                    <div className="bg-ctp-surface1 p-2 rounded-lg text-ctp-text"><Calendar size={20}/></div>
+                    <div className="bg-ctp-surface1 p-2 rounded-lg text-ctp-text"><Calendar size={20} /></div>
                     <div className="pr-2">
                         <p className="text-xs text-ctp-overlay1 font-medium">Today</p>
                         <p className="text-sm font-bold text-ctp-text">{new Date().toLocaleDateString()}</p>
@@ -160,7 +62,7 @@ export default function Dashboard() {
                     <div className="absolute -right-4 -top-4 bg-ctp-yellow/10 w-24 h-24 rounded-full blur-2xl group-hover:bg-ctp-yellow/20 transition-all"></div>
                     <div className="flex items-center gap-5 relative z-10">
                         <div className="p-4 bg-ctp-yellow/20 rounded-2xl text-ctp-yellow shadow-inner shadow-ctp-yellow/10">
-                            <Trophy size={32} strokeWidth={2.5}/>
+                            <Trophy size={32} strokeWidth={2.5} />
                         </div>
                         <div>
                             <p className="text-sm text-ctp-subtext0 font-medium uppercase tracking-wider">Current Level</p>
@@ -174,7 +76,7 @@ export default function Dashboard() {
                     <div className="absolute -right-4 -top-4 bg-ctp-green/10 w-24 h-24 rounded-full blur-2xl group-hover:bg-ctp-green/20 transition-all"></div>
                     <div className="flex items-center gap-5 relative z-10">
                         <div className="p-4 bg-ctp-green/20 rounded-2xl text-ctp-green shadow-inner shadow-ctp-green/10">
-                            <Star size={32} strokeWidth={2.5}/>
+                            <Star size={32} strokeWidth={2.5} />
                         </div>
                         <div>
                             <p className="text-sm text-ctp-subtext0 font-medium uppercase tracking-wider">Total XP</p>
@@ -214,7 +116,7 @@ export default function Dashboard() {
             {/* Missions */}
             <div>
                 <h2 className="text-2xl font-bold mb-6 text-ctp-text flex items-center gap-2">
-                    <Zap className="text-ctp-yellow fill-current"/> Daily Missions
+                    <Zap className="text-ctp-yellow fill-current" /> Daily Missions
                 </h2>
                 <div className="grid gap-4">
                     {sortedTasks.map((t) => {
@@ -226,9 +128,9 @@ export default function Dashboard() {
                                 className={`
                                     group p-5 rounded-2xl border transition-all duration-300 flex items-center justify-between
                                     ${isCompleted
-                                    ? 'bg-ctp-surface0/50 border-ctp-surface0 opacity-60'
-                                    : 'bg-ctp-surface0 border-ctp-surface1 hover:border-ctp-mauve hover:shadow-lg hover:shadow-ctp-mauve/5 hover:-translate-y-1'
-                                }
+                                        ? 'bg-ctp-surface0/50 border-ctp-surface0 opacity-60'
+                                        : 'bg-ctp-surface0 border-ctp-surface1 hover:border-ctp-mauve hover:shadow-lg hover:shadow-ctp-mauve/5 hover:-translate-y-1'
+                                    }
                                 `}
                             >
                                 <div className="flex items-center gap-5 flex-1">
@@ -238,16 +140,16 @@ export default function Dashboard() {
                                         className={`
                                             p-3 rounded-full transition-all duration-300 flex-shrink-0
                                             ${isCompleted
-                                            ? 'text-ctp-green bg-ctp-green/10'
-                                            : isVerifying
-                                                ? 'text-ctp-peach bg-ctp-peach/10 cursor-wait'
-                                                : 'text-ctp-overlay1 bg-ctp-surface1 hover:bg-ctp-mauve hover:text-ctp-base'
-                                        }
+                                                ? 'text-ctp-green bg-ctp-green/10'
+                                                : isVerifying
+                                                    ? 'text-ctp-peach bg-ctp-peach/10 cursor-wait'
+                                                    : 'text-ctp-overlay1 bg-ctp-surface1 hover:bg-ctp-mauve hover:text-ctp-base'
+                                            }
                                         `}
                                     >
-                                        {isCompleted && <CheckCircle size={24} strokeWidth={3}/>}
-                                        {t.status === 'PENDING' && <Circle size={24} strokeWidth={2.5}/>}
-                                        {isVerifying && <Loader2 size={24} className="animate-spin"/>}
+                                        {isCompleted && <CheckCircle size={24} strokeWidth={3} />}
+                                        {t.status === 'PENDING' && <Circle size={24} strokeWidth={2.5} />}
+                                        {isVerifying && <Loader2 size={24} className="animate-spin" />}
                                     </button>
 
                                     <div className="flex-1 min-w-0 pr-4">
@@ -284,15 +186,7 @@ export default function Dashboard() {
             </div>
 
             {/* Popups */}
-            {toast && (
-                <Toast
-                    type={toast.type}
-                    title={toast.title}
-                    description={toast.description}
-                    onClose={() => setToast(null)}
-                />
-            )}
-            {showConfetti && <Confetti/>}
+            {showConfetti && <Confetti />}
 
             {achievementPopup && (
                 <AchievementPopup

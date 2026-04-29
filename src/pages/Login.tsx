@@ -1,41 +1,36 @@
-import {useState} from 'react';
-import {useForm} from 'react-hook-form';
-import api from '../services/api';
-import {useAuth} from '../context/AuthContext';
-import {Link, useNavigate} from 'react-router-dom';
-import {ArrowLeft, Gamepad2} from 'lucide-react';
-import {isAxiosError} from "axios";
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { useAuth } from '../context/AuthContext';
+import { Link, useNavigate } from 'react-router-dom';
+import { ArrowLeft, Gamepad2 } from 'lucide-react';
+import { loginUser } from '../services/authService';
+
+interface LoginFormData {
+    username: string;
+    password: string;
+}
 
 export default function Login() {
-    const {register, handleSubmit, formState: {isSubmitting}} = useForm();
-    const {login} = useAuth();
+    const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<LoginFormData>();
+    const { login } = useAuth();
     const navigate = useNavigate();
     const [error, setError] = useState('');
 
-    interface LoginFormData {
-        username: string;
-        password: string;
-    }
-
-    const onSubmit = async (data: LoginFormData) => { // Fix: Type the data argument
+    const onSubmit = async (data: LoginFormData) => {
         setError('');
         try {
-            const response = await api.post('/auth/login', data);
-            login(response.data.token, response.data.username, response.data.role);
+            const response = await loginUser(data);
+            login(response.token, response.username, response.role);
 
-            if (response.data.role === 'ADMIN') {
+            if (response.role === 'ADMIN') {
                 navigate('/admin');
             } else {
                 navigate('/dashboard');
             }
-        } catch (err) { // Fix: Remove ': any' (TypeScript defaults this to 'unknown')
-            if (isAxiosError(err) && err.response) {
-                // Safely treat response data as an object that might have a message
-                const errorData = err.response.data as { message?: string };
-                setError(errorData?.message || 'Invalid username or password');
-            } else {
-                setError('Invalid username or password');
-            }
+        } catch (err) {
+            // Global interceptor will show toast, but we can set local state too if we want, or rely on toast
+            // The interceptor might not return the response message clearly, let's keep local state for UX
+            setError('Invalid username or password');
         }
     };
 
@@ -45,7 +40,7 @@ export default function Login() {
                 to="/"
                 className="absolute top-6 left-6 flex items-center gap-2 text-ctp-subtext0 hover:text-ctp-text transition-colors z-50 font-medium"
             >
-                <ArrowLeft size={20}/>
+                <ArrowLeft size={20} />
                 <span>Back to Home</span>
             </Link>
 
@@ -53,10 +48,10 @@ export default function Login() {
             <div className="absolute bottom-10 right-10 w-64 h-64 bg-ctp-blue/20 rounded-full blur-3xl"></div>
 
             <form onSubmit={handleSubmit(onSubmit)}
-                  className="bg-ctp-surface0 p-8 rounded-2xl shadow-2xl w-full max-w-sm border border-ctp-surface1 relative z-10">
+                className="bg-ctp-surface0 p-8 rounded-2xl shadow-2xl w-full max-w-sm border border-ctp-surface1 relative z-10">
                 <div className="flex justify-center mb-6">
                     <div className="bg-ctp-mauve p-3 rounded-xl text-ctp-base">
-                        <Gamepad2 size={32}/>
+                        <Gamepad2 size={32} />
                     </div>
                 </div>
 
@@ -69,24 +64,32 @@ export default function Login() {
                 <div className="space-y-4">
                     <div>
                         <label htmlFor="username"
-                               className="block text-xs font-bold text-ctp-subtext0 uppercase mb-1 ml-1">Username</label>
+                            className="block text-xs font-bold text-ctp-subtext0 uppercase mb-1 ml-1">Username</label>
                         <input
                             id="username"
-                            {...register('username', {required: 'Username is required'})}
+                            {...register('username', { 
+                                required: 'Username is required',
+                                minLength: { value: 3, message: 'Username must be at least 3 characters' }
+                            })}
                             className="w-full p-3 bg-ctp-mantle border border-ctp-surface1 rounded-xl text-ctp-text focus:outline-none focus:border-ctp-mauve focus:ring-1 focus:ring-ctp-mauve transition-all placeholder-ctp-overlay1"
                             placeholder="e.g. PlayerOne"
                         />
+                        {errors.username && <span className="text-ctp-red text-xs ml-1">{errors.username.message}</span>}
                     </div>
                     <div>
                         <label htmlFor="password"
-                               className="block text-xs font-bold text-ctp-subtext0 uppercase mb-1 ml-1">Password</label>
+                            className="block text-xs font-bold text-ctp-subtext0 uppercase mb-1 ml-1">Password</label>
                         <input
                             id="password"
-                            {...register('password', {required: 'Password is required'})}
                             type="password"
+                            {...register('password', { 
+                                required: 'Password is required',
+                                minLength: { value: 6, message: 'Password must be at least 6 characters' }
+                            })}
                             className="w-full p-3 bg-ctp-mantle border border-ctp-surface1 rounded-xl text-ctp-text focus:outline-none focus:border-ctp-mauve focus:ring-1 focus:ring-ctp-mauve transition-all placeholder-ctp-overlay1"
                             placeholder="••••••••"
                         />
+                        {errors.password && <span className="text-ctp-red text-xs ml-1">{errors.password.message}</span>}
                     </div>
                 </div>
 
@@ -100,8 +103,8 @@ export default function Login() {
 
                 <p className="mt-6 text-center text-sm text-ctp-subtext0">
                     New player? <Link to="/register"
-                                      className="text-ctp-blue hover:text-ctp-sapphire font-semibold hover:underline">Create
-                    Account</Link>
+                        className="text-ctp-blue hover:text-ctp-sapphire font-semibold hover:underline">Create
+                        Account</Link>
                 </p>
             </form>
         </div>

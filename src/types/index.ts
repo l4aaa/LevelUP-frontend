@@ -14,6 +14,7 @@ export interface User {
     currentXp: number;
     streak: number;
     unlockedAchievementIds: number[];
+    role: string;
 }
 
 export interface TaskDetail {
@@ -40,5 +41,26 @@ export interface DashboardData {
     streak: number;
     studyProgramName: string;
     tasks: UserTask[];
+    unlockedAchievementIds: number[];
+}
+
+export interface StudyProgram {
+    id: number;
+    name: string;
+}
+
+export interface AuthResponse {
+    token: string;
+    username: string;
+    role: string;
+}
+
+export interface LeaderboardEntry {
+    username: string;
+    currentLevel: number;
+    currentXp: number;
+}
+
+export interface UserMeResponse {
     unlockedAchievementIds: number[];
 }

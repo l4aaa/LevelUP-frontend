@@ -1,30 +1,31 @@
-import {useEffect, useState} from 'react';
-import api from '../services/api';
-import {useAuth} from '../context/AuthContext';
-import {Medal, Trophy} from 'lucide-react';
-
-interface LeaderboardEntry {
-    username: string;
-    currentLevel: number;
-    currentXp: number;
-}
+import { useAuth } from '../context/AuthContext';
+import { Medal, Trophy, Loader2, AlertCircle } from 'lucide-react';
+import { useLeaderboard } from './useLeaderboard';
 
 export default function Leaderboard() {
-    const {username} = useAuth();
-    const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
-
-    useEffect(() => {
-        api.get('/user/leaderboard')
-            .then(res => setLeaderboard(res.data))
-            .catch(err => console.error(err));
-    }, []);
+    const { username } = useAuth();
+    const { leaderboard, loading, error } = useLeaderboard();
 
     const getRankIcon = (index: number) => {
-        if (index === 0) return <Trophy className="text-ctp-yellow fill-ctp-yellow" size={20}/>;
-        if (index === 1) return <Medal className="text-ctp-subtext1" size={20}/>;
-        if (index === 2) return <Medal className="text-ctp-maroon" size={20}/>;
+        if (index === 0) return <Trophy className="text-ctp-yellow fill-ctp-yellow" size={20} />;
+        if (index === 1) return <Medal className="text-ctp-subtext1" size={20} />;
+        if (index === 2) return <Medal className="text-ctp-maroon" size={20} />;
         return <span className="text-ctp-overlay1 font-mono">#{index + 1}</span>;
     };
+
+    if (loading) return (
+        <div className="min-h-full flex items-center justify-center">
+            <Loader2 className="w-10 h-10 text-ctp-mauve animate-spin" />
+        </div>
+    );
+
+    if (error) return (
+        <div className="flex justify-center p-12">
+            <div className="bg-ctp-red/10 p-6 rounded-xl border border-ctp-red/20 text-ctp-red flex items-center gap-3">
+                <AlertCircle /> {error}
+            </div>
+        </div>
+    );
 
     return (
         <div className="p-6 md:p-12">

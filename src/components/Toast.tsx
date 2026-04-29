@@ -1,7 +1,7 @@
 import {useEffect} from 'react';
-import {CheckCircle, Trophy, X} from 'lucide-react';
+import {CheckCircle, Trophy, X, AlertCircle} from 'lucide-react';
 
-export type ToastType = 'TASK' | 'LEVEL';
+export type ToastType = 'TASK' | 'LEVEL' | 'ERROR';
 
 export interface ToastProps {
     type: ToastType;
@@ -18,6 +18,7 @@ export default function Toast({type, title, description, onClose}: ToastProps) {
     }, [onClose, type]);
 
     const isLevel = type === 'LEVEL';
+    const isError = type === 'ERROR';
 
     if (isLevel) {
         return (
@@ -50,12 +51,14 @@ export default function Toast({type, title, description, onClose}: ToastProps) {
 
     return (
         <div className={`
-            fixed top-6 right-6 z-50 flex items-center gap-4
+            relative z-50 flex items-center gap-4
             px-6 py-4 rounded-2xl shadow-2xl border
             animate-[slideIn_0.4s_ease-out]
-            bg-ctp-green/90 text-ctp-base border-ctp-green
+            ${isError 
+                ? 'bg-ctp-red/90 text-ctp-base border-ctp-red' 
+                : 'bg-ctp-green/90 text-ctp-base border-ctp-green'}
         `}>
-            <CheckCircle size={28}/>
+            {isError ? <AlertCircle size={28}/> : <CheckCircle size={28}/>}
             <div>
                 <div className="font-bold">{title}</div>
                 {description && <div className="text-sm opacity-90">{description}</div>}
