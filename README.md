@@ -17,19 +17,20 @@ interface to track progress, complete quests, and compete on global leaderboards
 ### 🔐 Authentication & Security
 
 * **Secure Access**: Dedicated Login and Registration screens with client-side validation using **React Hook Form**.
-* **JWT Management**: Industry-standard token-based authentication stored securely in LocalStorage with automated Axios
-  interceptors.
-* **Role-Based Access**: Centralized `AuthContext` manages User vs. Admin roles, protecting routes and UI elements
-  accordingly.
+* **JWT Management**: Token-based authentication stored in LocalStorage with automated Axios interceptors for handling 401/403 errors.
+* **Role-Based Access**: Centralized `AuthContext` manages User vs. Admin roles, protecting routes and UI elements accordingly.
 
 ### 📊 Interactive Dashboard
 
-* **Real-time Progression**: Visualizes Level, Total XP, and Daily Streaks with animated progress bars and pulse
-  effects.
-* **Quest Engine**: Manages daily tasks with three distinct states: `PENDING`, `VERIFYING` (with polling), and
-  `COMPLETED`.
-* **Visual Feedback**: Integrated **Confetti** effects and **Toast** notifications celebrate level-ups, task
-  submissions, and milestones.
+* **Real-time Progression**: Visualizes Level, Total XP, and Daily Streaks with animated progress bars and pulse effects.
+* **Quest Engine**: Manages daily tasks with three distinct states: `PENDING`, `VERIFYING` (with polling), and `COMPLETED`.
+* **Visual Feedback**: Integrated **Confetti** effects and **Toast** notifications celebrate level-ups, task submissions, and milestones.
+
+### 🛡️ Reliable UX & Performance
+
+* **Global Notifications**: Centralized `GlobalToast` system for consistent success and error feedback across the entire app.
+* **Error Resilience**: `ErrorBoundary` components catch and handle runtime crashes gracefully, providing a fallback UI.
+* **Optimized Loading**: Route-based **Code Splitting** using `React.lazy` and `Suspense` ensures faster initial page loads.
 
 ### 🏆 Gamification UI
 
@@ -50,8 +51,8 @@ interface to track progress, complete quests, and compete on global leaderboards
 * **Build Tool**: Vite 7
 * **Styling**: Tailwind CSS v4 (Catppuccin Mocha Palette)
 * **Routing**: React Router DOM v7
-* **State Management**: React Context API (Auth)
-* **HTTP Client**: Axios
+* **State Management**: React Context API & Custom Hooks
+* **HTTP Client**: Axios (with Global Interceptors)
 * **Icons**: Lucide React
 * **Validation**: React Hook Form
 
@@ -110,16 +111,13 @@ The application will launch at `http://localhost:5173`.
 ```bash
 src/
 ├── components/      # Reusable UI components (Toast, Confetti, AchievementPopup)
+├── constants/       # Global constants (API paths, Storage keys)
 ├── context/         # React Context for global Auth and Role state
-├── pages/           # Main route views
-│   ├── AdminDashboard.tsx  # User management panel
-│   ├── Dashboard.tsx       # Main student hub
-│   ├── Leaderboard.tsx     # Global rankings
-│   └── ...                 # Login, Register, Landing, Achievements
-├── services/        # Axios configuration and API interceptors
+├── pages/           # View components and Page-specific hooks
+├── services/        # API services and Axios configuration
 ├── types/           # TypeScript interfaces (User, Task, DashboardData)
-├── App.tsx          # Main routing logic and Layout wrapper
-└── index.css        # Tailwind directives and custom keyframe animations
+├── App.tsx          # Main routing and global providers
+└── index.css        # Tailwind directives and custom animations
 ```
 
 ---
