@@ -1,17 +1,19 @@
 import { Calendar, CheckCircle, Circle, Loader2, Star, Trophy, Zap } from 'lucide-react';
-import { useDashboard } from './useDashboard';
+import { useDashboard } from '../hooks/useDashboard';
 import Confetti from '../components/Confetti';
 import AchievementPopup from '../components/AchievementPopup';
-
-const XP_PER_LEVEL = 100;
+import Toast from '../components/Toast';
+import { XP_PER_LEVEL } from '../constants';
 
 export default function Dashboard() {
     const {
         data,
         loading,
         error,
+        toast,
         showConfetti,
         achievementPopup,
+        setToast,
         setAchievementPopup,
         sortedTasks,
         completeTask
@@ -138,6 +140,7 @@ export default function Dashboard() {
                                     <button
                                         onClick={() => t.status === 'PENDING' && completeTask(t.userTaskId)}
                                         disabled={t.status !== 'PENDING'}
+                                        aria-label={isCompleted ? 'Task completed' : isVerifying ? 'Verifying task' : 'Complete task'}
                                         className={`
                                             p-3 rounded-full transition-all duration-300 flex-shrink-0
                                             ${isCompleted
@@ -194,6 +197,17 @@ export default function Dashboard() {
                     name={achievementPopup}
                     onClose={() => setAchievementPopup(null)}
                 />
+            )}
+
+            {toast && (
+                <div className="fixed bottom-6 right-6 z-50">
+                    <Toast
+                        type={toast.type}
+                        title={toast.title}
+                        description={toast.description}
+                        onClose={() => setToast(null)}
+                    />
+                </div>
             )}
         </div>
     );

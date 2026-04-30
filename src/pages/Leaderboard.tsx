@@ -1,6 +1,6 @@
 import { useAuth } from '../context/AuthContext';
 import { Medal, Trophy, Loader2, AlertCircle } from 'lucide-react';
-import { useLeaderboard } from './useLeaderboard';
+import { useLeaderboard } from '../hooks/useLeaderboard';
 
 export default function Leaderboard() {
     const { username } = useAuth();
@@ -36,7 +36,7 @@ export default function Leaderboard() {
                 </div>
 
                 <div className="bg-ctp-surface0 rounded-2xl shadow-xl overflow-hidden border border-ctp-surface1">
-                    <table className="w-full text-left border-collapse">
+                    <table className="w-full text-left border-collapse" aria-label="Global Leaderboard">
                         <thead
                             className="bg-ctp-mantle border-b border-ctp-surface1 text-ctp-subtext1 uppercase text-xs tracking-wider">
                         <tr>

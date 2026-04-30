@@ -1,4 +1,5 @@
-import React, { Suspense, lazy } from 'react';
+import { Suspense, lazy } from 'react';
+import type { ReactNode, ReactElement } from 'react';
 import { BrowserRouter as Router, Link, Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
 import { Award, LayoutDashboard, LogOut, ShieldCheck, Trophy, Loader2 } from 'lucide-react';
@@ -14,12 +15,12 @@ const Achievements = lazy(() => import('./pages/Achievements'));
 const Landing = lazy(() => import('./pages/Landing'));
 const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
 
-function ProtectedRoute({ children }: { children: React.ReactElement }) {
+function ProtectedRoute({ children }: { children: ReactElement }) {
     const { isAuthenticated } = useAuth();
     return isAuthenticated ? children : <Navigate to="/login" />;
 }
 
-function AdminRoute({ children }: { children: React.ReactElement }) {
+function AdminRoute({ children }: { children: ReactElement }) {
     const { isAuthenticated, role } = useAuth();
 
     if (!isAuthenticated) return <Navigate to="/login" />;
@@ -63,6 +64,7 @@ function Navigation() {
                         <Link
                             key={link.path}
                             to={link.path}
+                            aria-label={`Go to ${link.label}`}
                             className={`
                                 flex flex-col md:flex-row items-center md:gap-4 p-2 md:px-4 md:py-3.5 rounded-xl transition-all duration-300
                                 ${isActive
@@ -93,7 +95,7 @@ function Navigation() {
     );
 }
 
-function Layout({ children }: { children: React.ReactNode }) {
+function Layout({ children }: { children: ReactNode }) {
     return (
         <div className="flex flex-col md:flex-row min-h-screen bg-ctp-base text-ctp-text font-sans">
             <Navigation />

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { AlertCircle, Edit, Save, Trash2, X, Loader2 } from 'lucide-react';
-import { useAdminDashboard } from './useAdminDashboard';
+import { useAdminDashboard } from '../hooks/useAdminDashboard';
 
 export default function AdminDashboard() {
     const {
@@ -37,7 +37,7 @@ export default function AdminDashboard() {
 
             <div className="bg-ctp-surface0 rounded-2xl border border-ctp-surface1 overflow-hidden shadow-lg">
                 <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse min-w-[800px]">
+                    <table className="w-full text-left border-collapse min-w-[800px]" aria-label="Users Management">
                         <thead className="bg-ctp-mantle text-ctp-subtext1 text-xs uppercase tracking-wider">
                             <tr>
                                 <th className="p-4">ID</th>

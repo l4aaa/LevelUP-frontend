@@ -15,10 +15,17 @@ export default function GlobalToast() {
     useEffect(() => {
         const handleToast = (e: Event) => {
             const customEvent = e as CustomEvent<{type: ToastType, message: string}>;
+            
+            let title = 'Notification';
+            if (customEvent.detail.type === 'ERROR') title = 'Error';
+            else if (customEvent.detail.type === 'LEVEL') title = 'Level Up!';
+            else if (customEvent.detail.type === 'TASK') title = 'Task Update';
+            else if (customEvent.detail.type === 'ACHIEVEMENT') title = 'Achievement Unlocked!';
+
             const newToast: ToastMessage = {
                 id: Date.now() + Math.random(),
                 type: customEvent.detail.type,
-                title: customEvent.detail.type === 'ERROR' ? 'Error' : 'Notification',
+                title,
                 description: customEvent.detail.message
             };
             setToasts(prev => [...prev, newToast]);

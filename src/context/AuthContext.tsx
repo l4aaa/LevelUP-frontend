@@ -16,8 +16,9 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({children}: { children: ReactNode }) {
     const [token, setToken] = useState<string | null>(localStorage.getItem(STORAGE_KEYS.TOKEN));
     const [username, setUsername] = useState<string | null>(localStorage.getItem(STORAGE_KEYS.USERNAME));
-    const [isAuthenticated, setIsAuthenticated] = useState<boolean>(!!token);
     const [role, setRole] = useState<string | null>(localStorage.getItem(STORAGE_KEYS.ROLE));
+
+    const isAuthenticated = !!token;
 
     const login = useCallback((newToken: string, newUsername: string, newRole: string) => {
         localStorage.setItem(STORAGE_KEYS.TOKEN, newToken);
@@ -26,7 +27,6 @@ export function AuthProvider({children}: { children: ReactNode }) {
         setToken(newToken);
         setUsername(newUsername);
         setRole(newRole);
-        setIsAuthenticated(true);
     }, []);
 
     const logout = useCallback(() => {
@@ -36,7 +36,6 @@ export function AuthProvider({children}: { children: ReactNode }) {
         setToken(null);
         setUsername(null);
         setRole(null);
-        setIsAuthenticated(false);
     }, []);
 
     useEffect(() => {

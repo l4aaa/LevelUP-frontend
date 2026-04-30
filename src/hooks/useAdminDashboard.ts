@@ -35,10 +35,12 @@ export function useAdminDashboard() {
 
     const handleDelete = async (id: number) => {
         try {
+            setError(null);
             await deleteUserApi(id);
             setUsers(users.filter(u => u.id !== id));
         } catch (err) {
             console.error("Failed to delete user", err);
+            setError("Failed to delete user. Please try again.");
         }
     };
 
@@ -65,6 +67,7 @@ export function useAdminDashboard() {
             setEditForm({});
         } catch (err) {
             console.error("Failed to update user", err);
+            setError("Failed to update user. Please check your input.");
         }
     };
 

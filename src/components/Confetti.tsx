@@ -1,8 +1,9 @@
 import { useState } from 'react';
+import type { CSSProperties } from 'react';
 
 interface Particle {
     id: number;
-    style: React.CSSProperties;
+    style: CSSProperties;
 }
 
 const COLORS = ['#cba6f7', '#89b4fa', '#a6e3a1', '#f9e2af'];

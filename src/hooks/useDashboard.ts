@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, useMemo, useCallback } from 'react';
-import { getDashboardData, getAchievements, completeTask as completeTaskApi } from '../services/dashboardService';
+import { getDashboardData, completeTask as completeTaskApi } from '../services/dashboardService';
+import { getAchievements } from '../services/userService';
 import type { Achievement, DashboardData, ToastType } from '../types';
 import { POLLING_INTERVALS, UI_STRINGS, ERROR_MESSAGES } from '../constants';
 import axios from 'axios';
@@ -81,7 +82,9 @@ export function useDashboard() {
         if (!hasVerifyingTasks) return;
 
         const intervalId = setInterval(() => {
-            fetchDashboard(true);
+            if (document.visibilityState === 'visible') {
+                fetchDashboard(true);
+            }
         }, POLLING_INTERVALS.DASHBOARD_VERIFYING);
 
         return () => clearInterval(intervalId);

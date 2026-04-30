@@ -41,3 +41,5 @@ export const UI_STRINGS = {
     VERIFYING: 'Verifying with the server...',
     NEW_BADGE: 'New Badge'
 } as const;
+
+export const XP_PER_LEVEL = 100;

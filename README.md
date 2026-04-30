@@ -26,7 +26,7 @@ interface to track progress, complete quests, and compete on global leaderboards
 * **Quest Engine**: Manages daily tasks with three distinct states: `PENDING`, `VERIFYING` (with polling), and `COMPLETED`.
 * **Visual Feedback**: Integrated **Confetti** effects and **Toast** notifications celebrate level-ups, task submissions, and milestones.
 
-### 🛡️ Reliable UX & Performance
+### ⚡ Reliable UX & Performance
 
 * **Global Notifications**: Centralized `GlobalToast` system for consistent success and error feedback across the entire app.
 * **Error Resilience**: `ErrorBoundary` components catch and handle runtime crashes gracefully, providing a fallback UI.
@@ -83,7 +83,7 @@ interface to track progress, complete quests, and compete on global leaderboards
 
 ```bash
 # Clone the repository
-git clone [https://github.com/l4aaa/LevelUP-frontend.git](https://github.com/l4aaa/LevelUP-frontend.git)
+git clone https://github.com/l4aaa/LevelUP-frontend.git
 cd LevelUP-frontend
 
 # Install dependencies
@@ -114,7 +114,8 @@ src/
 ├── components/      # Reusable UI components (Toast, Confetti, AchievementPopup)
 ├── constants/       # Global constants (API paths, Storage keys)
 ├── context/         # React Context for global Auth and Role state
-├── pages/           # View components and Page-specific hooks
+├── hooks/           # Shared React hooks (useDashboard, useAuth, etc.)
+├── pages/           # View components
 ├── services/        # API services and Axios configuration
 ├── types/           # TypeScript interfaces (User, Task, DashboardData)
 ├── App.tsx          # Main routing and global providers

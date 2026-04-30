@@ -38,7 +38,7 @@ export default class ErrorBoundary extends Component<Props, State> {
               We encountered an unexpected error.
             </p>
             <button 
-              onClick={() => window.location.href = '/'}
+              onClick={() => window.location.replace('/')}
               className="bg-ctp-mauve hover:bg-ctp-mauve/90 text-ctp-base font-bold py-3 px-6 rounded-xl transition-transform active:scale-95"
             >
               Return Home
