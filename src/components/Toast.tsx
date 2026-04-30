@@ -1,7 +1,6 @@
 import {useEffect} from 'react';
 import {CheckCircle, Trophy, X, AlertCircle} from 'lucide-react';
-
-export type ToastType = 'TASK' | 'LEVEL' | 'ERROR';
+import type { ToastType } from '../types';
 
 export interface ToastProps {
     type: ToastType;

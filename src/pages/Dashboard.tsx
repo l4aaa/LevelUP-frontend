@@ -3,6 +3,8 @@ import { useDashboard } from './useDashboard';
 import Confetti from '../components/Confetti';
 import AchievementPopup from '../components/AchievementPopup';
 
+const XP_PER_LEVEL = 100;
+
 export default function Dashboard() {
     const {
         data,
@@ -24,9 +26,8 @@ export default function Dashboard() {
     if (error) return <div className="p-8 text-center text-ctp-red">{error}</div>;
     if (!data) return <div className="p-8 text-center text-ctp-red">Error loading dashboard</div>;
 
-    const xpPerLevel = 100;
-    const currentLevelProgress = data.currentXp % xpPerLevel;
-    const progressPercent = (currentLevelProgress / xpPerLevel) * 100;
+    const currentLevelProgress = data.currentXp % XP_PER_LEVEL;
+    const progressPercent = (currentLevelProgress / XP_PER_LEVEL) * 100;
 
     return (
         <div className="p-6 md:p-12 max-w-6xl mx-auto">

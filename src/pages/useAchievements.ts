@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { getAchievements, getUserMe } from '../services/userService';
 import type { Achievement } from '../types';
+import { ERROR_MESSAGES } from '../constants';
+import axios from 'axios';
 
 export function useAchievements() {
     const [allAchievements, setAllAchievements] = useState<Achievement[]>([]);
@@ -21,7 +23,11 @@ export function useAchievements() {
                 setError(null);
             } catch (err) {
                 console.error("Failed to sync achievements:", err);
-                setError("Failed to load achievement data.");
+                if (axios.isAxiosError(err) && err.response?.data?.message) {
+                    setError(err.response.data.message);
+                } else {
+                    setError(ERROR_MESSAGES.UNEXPECTED);
+                }
             } finally {
                 setLoading(false);
             }

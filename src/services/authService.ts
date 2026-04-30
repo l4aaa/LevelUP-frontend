@@ -1,13 +1,13 @@
 import api from './api';
 import { API_PATHS } from '../constants';
-import type { AuthResponse, StudyProgram } from '../types';
+import type { AuthResponse, StudyProgram, LoginPayload, RegisterPayload } from '../types';
 
-export const loginUser = async (data: unknown): Promise<AuthResponse> => {
+export const loginUser = async (data: LoginPayload): Promise<AuthResponse> => {
     const response = await api.post<AuthResponse>(API_PATHS.LOGIN, data);
     return response.data;
 };
 
-export const registerUser = async (data: unknown): Promise<AuthResponse> => {
+export const registerUser = async (data: RegisterPayload): Promise<AuthResponse> => {
     const response = await api.post<AuthResponse>(API_PATHS.REGISTER, data);
     return response.data;
 };

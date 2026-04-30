@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState, useMemo, useCallback } from 'react';
 import { getDashboardData, getAchievements, completeTask as completeTaskApi } from '../services/dashboardService';
-import type { Achievement, DashboardData } from '../types';
-import { POLLING_INTERVALS } from '../constants';
-import type { ToastType } from '../components/Toast';
+import type { Achievement, DashboardData, ToastType } from '../types';
+import { POLLING_INTERVALS, UI_STRINGS, ERROR_MESSAGES } from '../constants';
+import axios from 'axios';
 
 export function useDashboard() {
     const [data, setData] = useState<DashboardData | null>(null);
@@ -31,7 +31,7 @@ export function useDashboard() {
                 if (prev && newData.level > prev.level) {
                     setToast({
                         type: 'LEVEL',
-                        title: 'LEVEL UP!',
+                        title: UI_STRINGS.LEVEL_UP,
                         description: `You reached Level ${newData.level} 🎉`
                     });
                     setShowConfetti(true);
@@ -45,7 +45,7 @@ export function useDashboard() {
 
                     if (diffId) {
                         const achievement = achievementsRef.current.find(a => a.id === diffId);
-                        const name = achievement ? achievement.name : "New Badge";
+                        const name = achievement ? achievement.name : UI_STRINGS.NEW_BADGE;
                         setAchievementPopup(name);
                     }
                 }
@@ -55,7 +55,13 @@ export function useDashboard() {
             });
         } catch (err) {
             console.error("Failed to fetch dashboard", err);
-            if (!isBackground) setError("Failed to load dashboard data");
+            if (!isBackground) {
+                if (axios.isAxiosError(err) && err.response?.data?.message) {
+                    setError(err.response.data.message);
+                } else {
+                    setError(ERROR_MESSAGES.UNEXPECTED);
+                }
+            }
         } finally {
             if (!isBackground) setLoading(false);
         }
@@ -92,13 +98,13 @@ export function useDashboard() {
 
             setToast({
                 type: 'TASK',
-                title: 'Task submitted!',
-                description: 'Verifying with the server...'
+                title: UI_STRINGS.TASK_SUBMITTED,
+                description: UI_STRINGS.VERIFYING
             });
 
             await completeTaskApi(userTaskId);
-        } catch (error) {
-            console.error("Failed to complete task", error);
+        } catch (err) {
+            console.error("Failed to complete task", err);
             fetchDashboard(true);
         }
     };

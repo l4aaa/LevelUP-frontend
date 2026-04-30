@@ -64,3 +64,17 @@ export interface LeaderboardEntry {
 export interface UserMeResponse {
     unlockedAchievementIds: number[];
 }
+
+export interface LoginPayload {
+    username: string;
+    password: string;
+}
+
+export interface RegisterPayload {
+    username: string;
+    email: string;
+    studyProgramId: number;
+    password: string;
+}
+
+export type ToastType = 'TASK' | 'LEVEL' | 'ERROR';

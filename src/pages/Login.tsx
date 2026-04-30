@@ -4,33 +4,28 @@ import { useAuth } from '../context/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Gamepad2 } from 'lucide-react';
 import { loginUser } from '../services/authService';
-
-interface LoginFormData {
-    username: string;
-    password: string;
-}
+import { ROLES, ERROR_MESSAGES } from '../constants';
+import type { LoginPayload } from '../types';
 
 export default function Login() {
-    const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<LoginFormData>();
+    const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<LoginPayload>();
     const { login } = useAuth();
     const navigate = useNavigate();
     const [error, setError] = useState('');
 
-    const onSubmit = async (data: LoginFormData) => {
+    const onSubmit = async (data: LoginPayload) => {
         setError('');
         try {
             const response = await loginUser(data);
             login(response.token, response.username, response.role);
 
-            if (response.role === 'ADMIN') {
+            if (response.role === ROLES.ADMIN) {
                 navigate('/admin');
             } else {
                 navigate('/dashboard');
             }
         } catch (err) {
-            // Global interceptor will show toast, but we can set local state too if we want, or rely on toast
-            // The interceptor might not return the response message clearly, let's keep local state for UX
-            setError('Invalid username or password');
+            setError(ERROR_MESSAGES.INVALID_CREDENTIALS);
         }
     };
 

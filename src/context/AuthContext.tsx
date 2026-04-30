@@ -1,4 +1,4 @@
-import {createContext, useContext, useState, useMemo, useEffect, useCallback} from 'react';
+import {createContext, useState, useMemo, useEffect, useCallback, use} from 'react';
 import type {ReactNode} from 'react';
 import { STORAGE_KEYS } from '../constants';
 
@@ -65,7 +65,7 @@ export function AuthProvider({children}: { children: ReactNode }) {
 
 // eslint-disable-next-line react-refresh/only-export-components
 export function useAuth() {
-    const context = useContext(AuthContext);
+    const context = use(AuthContext);
     if (!context) {
         throw new Error('useAuth must be used within an AuthProvider');
     }

@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { getUsers, deleteUser as deleteUserApi, updateUser as updateUserApi } from '../services/adminService';
 import type { User } from '../types';
+import { ERROR_MESSAGES } from '../constants';
+import axios from 'axios';
 
 export function useAdminDashboard() {
     const [users, setUsers] = useState<User[]>([]);
@@ -17,7 +19,11 @@ export function useAdminDashboard() {
             setError(null);
         } catch (err) {
             console.error("Failed to fetch users", err);
-            setError("Failed to load user list.");
+            if (axios.isAxiosError(err) && err.response?.data?.message) {
+                setError(err.response.data.message);
+            } else {
+                setError(ERROR_MESSAGES.UNEXPECTED);
+            }
         } finally {
             setLoading(false);
         }
@@ -33,7 +39,6 @@ export function useAdminDashboard() {
             setUsers(users.filter(u => u.id !== id));
         } catch (err) {
             console.error("Failed to delete user", err);
-            // Global interceptor handles toast
         }
     };
 

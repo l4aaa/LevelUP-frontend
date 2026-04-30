@@ -1,6 +1,6 @@
 import {useEffect, useState} from 'react';
 import Toast from './Toast';
-import type { ToastType } from './Toast';
+import type { ToastType } from '../types';
 
 interface ToastMessage {
     id: number;

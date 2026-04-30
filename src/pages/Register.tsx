@@ -4,17 +4,11 @@ import { useAuth } from '../context/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Rocket } from 'lucide-react';
 import { registerUser, getStudyPrograms } from '../services/authService';
-import type { StudyProgram } from '../types';
-
-interface RegisterFormData {
-    username: string;
-    email: string;
-    studyProgramId: string;
-    password: string;
-}
+import { ROLES, ERROR_MESSAGES } from '../constants';
+import type { StudyProgram, RegisterPayload } from '../types';
 
 export default function Register() {
-    const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<RegisterFormData>();
+    const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<RegisterPayload>();
     const { login } = useAuth();
     const navigate = useNavigate();
     const [programs, setPrograms] = useState<StudyProgram[]>([]);
@@ -26,7 +20,7 @@ export default function Register() {
             .catch(err => console.error("Failed to load study programs", err));
     }, []);
 
-    const onSubmit = async (data: RegisterFormData) => {
+    const onSubmit = async (data: RegisterPayload) => {
         setServerError('');
         try {
             const payload = { ...data, studyProgramId: Number(data.studyProgramId) };
@@ -34,13 +28,13 @@ export default function Register() {
             const response = await registerUser(payload);
             login(response.token, response.username, response.role);
 
-            if (response.role === 'ADMIN') {
+            if (response.role === ROLES.ADMIN) {
                 navigate('/admin');
             } else {
                 navigate('/dashboard');
             }
         } catch (err) {
-            setServerError('Registration failed. Please try again.');
+            setServerError(ERROR_MESSAGES.REGISTRATION_FAILED);
         }
     };
 

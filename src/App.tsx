@@ -4,6 +4,7 @@ import { useAuth } from './context/AuthContext';
 import { Award, LayoutDashboard, LogOut, ShieldCheck, Trophy, Loader2 } from 'lucide-react';
 import GlobalToast from './components/GlobalToast';
 import ErrorBoundary from './components/ErrorBoundary';
+import { ROLES } from './constants';
 
 const Login = lazy(() => import('./pages/Login'));
 const Register = lazy(() => import('./pages/Register'));
@@ -22,7 +23,7 @@ function AdminRoute({ children }: { children: React.ReactElement }) {
     const { isAuthenticated, role } = useAuth();
 
     if (!isAuthenticated) return <Navigate to="/login" />;
-    if (role !== 'ADMIN') return <Navigate to="/dashboard" />;
+    if (role !== ROLES.ADMIN) return <Navigate to="/dashboard" />;
 
     return children;
 }
@@ -38,7 +39,7 @@ function Navigation() {
         { path: '/achievements', label: 'Achievements', icon: Award },
     ];
 
-    if (role === 'ADMIN') {
+    if (role === ROLES.ADMIN) {
         links.push({ path: '/admin', label: 'Admin Panel', icon: ShieldCheck });
     }
 
