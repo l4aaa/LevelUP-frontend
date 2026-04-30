@@ -47,14 +47,15 @@ interface to track progress, complete quests, and compete on global leaderboards
 
 ## 🛠️ Tech Stack
 
-* **Framework**: React 19 + TypeScript
+* **Framework**: React 19 + TypeScript (Strict Mode)
 * **Build Tool**: Vite 7
 * **Styling**: Tailwind CSS v4 (Catppuccin Mocha Palette)
-* **Routing**: React Router DOM v7
-* **State Management**: React Context API & Custom Hooks
-* **HTTP Client**: Axios (with Global Interceptors)
+* **Routing**: React Router DOM v7 (with Code Splitting)
+* **State Management**: React Context API (utilizing React 19 `use()` hook)
+* **HTTP Client**: Axios (with centralized Services & Interceptors)
 * **Icons**: Lucide React
 * **Validation**: React Hook Form
+* **Constants**: Centralized `src/constants/` for API paths, error messages, and storage keys
 
 ---
 
