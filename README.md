@@ -10,6 +10,13 @@ The modern, responsive client for **LevelUp**, a platform that transforms academ
 Built with the latest web standards, this Single Page Application (SPA) provides students with a visually engaging
 interface to track progress, complete quests, and compete on global leaderboards.
 
+## 🚀 Live Demo
+
+[https://levelup-app-iota.vercel.app/](https://levelup-app-iota.vercel.app/)
+
+> ⚠️ **Important Note: Cold Start**
+> Since the backend API is hosted on a free tier (Render), the first login or dashboard load might take up to **60 seconds** as the server "wakes up." Once active, the application will respond normally.
+
 ---
 
 ## ✨ Key Features
@@ -24,13 +31,14 @@ interface to track progress, complete quests, and compete on global leaderboards
 
 * **Real-time Progression**: Visualizes Level, Total XP, and Daily Streaks with animated progress bars and pulse effects.
 * **Quest Engine**: Manages daily tasks with three distinct states: `PENDING`, `VERIFYING` (with polling), and `COMPLETED`.
-* **Visual Feedback**: Integrated **Confetti** effects and **Toast** notifications celebrate level-ups, task submissions, and milestones.
+* **Visual Feedback System**: Uses React **Suspense** and **Loader2** components to provide a smooth UX during the initial API 'wake-up' period, plus **Confetti** effects and **Toast** notifications for milestones.
 
 ### ⚡ Reliable UX & Performance
 
 * **Global Notifications**: Centralized `GlobalToast` system for consistent success and error feedback across the entire app.
 * **Error Resilience**: `ErrorBoundary` components catch and handle runtime crashes gracefully, providing a fallback UI.
 * **Optimized Loading**: Route-based **Code Splitting** using `React.lazy` and `Suspense` ensures faster initial page loads.
+* **Environment-Driven Configuration**: Utilizes `VITE_API_URL` to dynamically connect the React application to the appropriate backend environment (Production Render instance or Localhost).
 
 ### 🏆 Gamification UI
 
