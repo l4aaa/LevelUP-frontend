@@ -10,7 +10,7 @@ The modern, responsive client for **LevelUp**, a platform that transforms academ
 Built with the latest web standards, this Single Page Application (SPA) provides students with a visually engaging
 interface to track progress, complete quests, and compete on global leaderboards.
 
-Looking for the server-side API? Check out the [LevelUp Backend](../LevelUP-backend) (or [GitHub Repository](https://github.com/l4aaa/LevelUP-backend)).
+Looking for the server-side API? Check out the [LevelUp Backend](https://github.com/l4aaa/LevelUP-backend).
 
 
 ## ✨ Key Features
