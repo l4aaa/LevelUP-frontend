@@ -24,7 +24,7 @@ export default function Login() {
             } else {
                 navigate('/dashboard');
             }
-        } catch (err) {
+        } catch {
             setError(ERROR_MESSAGES.INVALID_CREDENTIALS);
         }
     };

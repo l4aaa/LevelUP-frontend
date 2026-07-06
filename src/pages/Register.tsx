@@ -33,7 +33,7 @@ export default function Register() {
             } else {
                 navigate('/dashboard');
             }
-        } catch (err) {
+        } catch {
             setServerError(ERROR_MESSAGES.REGISTRATION_FAILED);
         }
     };
