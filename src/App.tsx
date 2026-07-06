@@ -82,6 +82,23 @@ function Navigation() {
                         </Link>
                     );
                 })}
+                
+                <button
+                    onClick={logout}
+                    className="
+                        flex flex-col md:flex-row items-center md:gap-4 p-2 md:px-4 md:py-3.5 rounded-xl transition-all duration-300
+                        text-ctp-red hover:bg-ctp-red/10
+                        md:hidden
+                    "
+                    aria-label="Logout"
+                >
+                    <LogOut
+                        size={24}
+                        className="md:w-5 md:h-5 transition-transform"
+                        strokeWidth={2}
+                    />
+                    <span className="text-[10px] md:text-sm lg:text-base">Logout</span>
+                </button>
             </div>
 
             <button
