@@ -10,14 +10,6 @@ The modern, responsive client for **LevelUp**, a platform that transforms academ
 Built with the latest web standards, this Single Page Application (SPA) provides students with a visually engaging
 interface to track progress, complete quests, and compete on global leaderboards.
 
-## 🚀 Live Demo
-
-[https://levelup-app-iota.vercel.app/](https://levelup-app-iota.vercel.app/)
-
-> ⚠️ **Important Note: Cold Start**
-> Since the backend API is hosted on a free tier (Render), the first login or dashboard load might take up to **60 seconds** as the server "wakes up." Once active, the application will respond normally.
-
----
 
 ## ✨ Key Features
 
@@ -38,7 +30,7 @@ interface to track progress, complete quests, and compete on global leaderboards
 * **Global Notifications**: Centralized `GlobalToast` system for consistent success and error feedback across the entire app.
 * **Error Resilience**: `ErrorBoundary` components catch and handle runtime crashes gracefully, providing a fallback UI.
 * **Optimized Loading**: Route-based **Code Splitting** using `React.lazy` and `Suspense` ensures faster initial page loads.
-* **Environment-Driven Configuration**: Utilizes `VITE_API_URL` to dynamically connect the React application to the appropriate backend environment (Production Render instance or Localhost).
+* **Environment-Driven Configuration**: Utilizes `VITE_API_URL` to dynamically connect the React application to the appropriate backend environment (Localhost or Docker backend container).
 
 ### 🏆 Gamification UI
 
@@ -112,6 +104,27 @@ npm run dev
 ```
 
 The application will launch at `http://localhost:5173`.
+
+### 5. Running with Docker
+
+You can run the application locally inside a Docker container.
+
+#### Build the Docker Image
+```bash
+docker build -t levelup-frontend .
+```
+
+You can optionally customize the backend API URL at build time using build arguments:
+```bash
+docker build --build-arg VITE_API_URL=http://localhost:8080/api -t levelup-frontend .
+```
+
+#### Run the Docker Container
+```bash
+docker run -d -p 80:80 --name levelup-frontend-container levelup-frontend
+```
+
+Once started, the application will be accessible at `http://localhost`.
 
 ---
 
